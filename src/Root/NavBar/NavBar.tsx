@@ -18,9 +18,11 @@ const NavBar: React.FC = () => {
     return (
         <AppBar position="static" sx={{ backgroundColor: 'black' }}>
             <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'white' }}>
-                    E-stock
-                </Typography>
+                <a href='/home'>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'white' }}>
+                        e-stock
+                    </Typography>
+                </a>
                 {isAuthenticated && (
                     <>
                         <Button

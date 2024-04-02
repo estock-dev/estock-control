@@ -6,7 +6,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { Outlet } from 'react-router-dom';
 
 // ... (other imports remain the same)
@@ -14,7 +13,6 @@ import { Outlet } from 'react-router-dom';
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const centeredTextStyles = {
     justifyContent: 'center',
@@ -31,7 +29,7 @@ const HomePage: React.FC = () => {
     backgroundColor: 'rgb(108, 108, 108)', 
     color: 'white',
     '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)', // Slightly lighter black on hover
+      backgroundColor: 'gray', // Slightly lighter black on hover
     },
     marginBottom: '10px', // Spacing between buttons
   };
@@ -64,7 +62,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: isMobile ? '10px' : '20px', gap: '10px', width: '100%' }}>
+    <div style={{ display: "flex", flexDirection: "column", marginTop: '20px', alignItems: "center", gap: '10px', width: '100%' }}>
       <Button 
         variant="contained" 
         onClick={() => navigate('/view-products')}
