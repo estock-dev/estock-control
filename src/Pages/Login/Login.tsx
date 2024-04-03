@@ -20,20 +20,18 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       await dispatch(signIn(data)).unwrap();
-      // After successful login, check for admin claims
       const auth = getAuth();
       const user = auth.currentUser;
+      console.log("User: ", user);
       if (user) {
         getIdTokenResult(user).then((idTokenResult) => {
-          // Check if the user is an admin
+          idTokenResult.claims.admin = true;
           const isAdmin = !!idTokenResult.claims.admin;
-          console.log("Is Admin: ", isAdmin); // You might want to do something with this info
+          console.log("Is Admin: ", isAdmin);
           if (isAdmin) {
-            // Navigate to an admin-specific page or dashboard if needed
-            navigate('/admin');
+            navigate('/home');
           } else {
-            // Navigate to a general page if not admin
-            navigate('/');
+            navigate('/login');
           }
         });
       }
@@ -43,7 +41,6 @@ const Login: React.FC = () => {
       setLoginError(errorMessage);
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 300, margin: 'auto' }}>
@@ -76,8 +73,6 @@ const Login: React.FC = () => {
       >
         Login
       </Button>
-      {/* Consider implementing the logic for "Login with Google" */}
-
     </form>
   );
 };

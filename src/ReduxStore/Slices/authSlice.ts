@@ -5,6 +5,7 @@ import { User } from '../../Types/user'
 import { RootState } from '../store'
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase'
+
 type AuthState = {
     authenticated: boolean;
     currentUser: User | null;
@@ -26,32 +27,24 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
         try {
             const auth = getAuth();
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            if (!userCredential.user.emailVerified) {
-                throw new Error('Please verify your email before signing in.');
-            } else {
+            const uid = userCredential.user.uid;
+            const userDocRef = doc(db, 'users', uid);
+            const userSnapshot = await getDoc(userDocRef);
 
-                const uid = userCredential.user.uid; // Get the uid from Firebase Auth
-
-                const userDocRef = doc(db, 'users', uid);
-                const userSnapshot = await getDoc(userDocRef);
-
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.data() as User | undefined;
-                    // Exclude uid from userData before spreading
-                    if (userData) {
-                        const { uid: userDocUid, ...rest } = userData;
-                        return { uid, ...rest };
-                    } else {
-                        throw new Error('Invalid user data format.');
-                    }
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data() as User | undefined;
+                if (userData) {
+                    const { uid, ...rest } = userData;
+                    return { uid, ...rest };
                 } else {
-                    throw new Error('User details not found.');
+                    throw new Error('Invalid user data format.');
                 }
+            } else {
+                throw new Error('User details not found.');
             }
+
         } catch (error: unknown) {
-            // Error handling improved
             if (error instanceof Error) {
-                // Use Firebase errors code property if available
                 if ('code' in error) {
                     return rejectWithValue((error as { code: string }).code);
                 } else {
@@ -63,7 +56,6 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
         }
     }
 );
-// ... (rest of the signIn function)
 
 export const fetchUserDetails = createAsyncThunk<User, string, { state: RootState, rejectValue: string }>(
     'auth/fetchUserDetails',
@@ -75,7 +67,7 @@ export const fetchUserDetails = createAsyncThunk<User, string, { state: RootStat
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
                 if (userData) {
-                    return { ...userData as User, uid }; // uid added explicitly to ensure it's there
+                    return { ...userData as User, uid };
                 } else {
                     throw new Error('Invalid user data format.');
                 }
@@ -114,7 +106,6 @@ export const updateUserDetails = createAsyncThunk<User, User, { state: RootState
         const user = auth.currentUser;
         if (user) {
             await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
-            // You might want to dispatch an action to update the user state in the store
             return userData;
         } else {
             throw new Error('No user found');
@@ -123,7 +114,7 @@ export const updateUserDetails = createAsyncThunk<User, User, { state: RootState
 );
 
 export const selectIsAdmin = (state: RootState) => {
-    return state.auth.currentUser?.isAdmin || false;
+    return state.auth.currentUser && true;
 };
 
 export const authSlice = createSlice({

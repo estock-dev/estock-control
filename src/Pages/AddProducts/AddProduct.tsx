@@ -10,11 +10,10 @@ import { addDoc, collection } from 'firebase/firestore';
 import { useState } from 'react';
 
 const AddProductSchema = Yup.object().shape({
-  name: Yup.string().required('Required'),
-  price: Yup.number().positive('Price must be positive').required('Required'),
-  description: Yup.string().required('Required'),
-  image: Yup.mixed().required('An image is required').nullable(),
-  quantity: Yup.number().min(0, 'Quantity cannot be negative').required('Required'),
+  marca: Yup.string().required('Required'),
+  modelo: Yup.string().required('Required'),
+  nome: Yup.string().required('Required'),
+  qtd: Yup.number().min(0, 'Quantity cannot be negative').required('Required'),
 });
 
 interface FormValues {
