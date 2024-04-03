@@ -5,6 +5,7 @@ import HomePage from "../Pages/Home/Home";
 import EditProducts from "../Pages/EditProduct/EditProduct";
 import AddProduct from "../Pages/AddProducts/AddProduct";
 import ViewProductsList from "../Pages/ViewProducts/ViewProductsList";
+import RequireAuthGuard from "./RequireAuthGuard";
 
 const routes: RouteObject[] = [
     {
@@ -19,12 +20,12 @@ const routes: RouteObject[] = [
     },
     {
         path: '/home',
-        element: <HomePage />,
+        element: <RequireAuthGuard><HomePage /></RequireAuthGuard>,
     },
-    { path: '/view-products', element: <ViewProductsList /> },
-            { path: '/edit-products', element: <EditProducts /> },
-            { path: '/edit-product/:id', element: <EditProducts /> },
-            { path: '/add-product', element: <AddProduct /> },
+    { path: '/view-products', element: <RequireAuthGuard><ViewProductsList /></RequireAuthGuard> },
+            { path: '/edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
+            { path: '/edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
+            { path: '/add-product', element: <RequireAuthGuard><AddProduct /></RequireAuthGuard> },
     // ... potentially other admin routes
 ];
 

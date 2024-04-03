@@ -23,7 +23,7 @@ const NavBar: React.FC = () => {
                         e-stock
                     </Typography>
                 </a>
-                {isAuthenticated && (
+                {/* {isAuthenticated && (
                     <>
                         <Button
                             id="menu-button"
@@ -55,7 +55,7 @@ const NavBar: React.FC = () => {
                             <MenuItem onClick={handleMenuClose}>Exportar contagem</MenuItem>
                         </Menu>
                     </>
-                )}
+                )} */}
             </Toolbar>
         </AppBar>
     );
