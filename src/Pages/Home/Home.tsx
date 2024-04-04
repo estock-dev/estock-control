@@ -77,21 +77,21 @@ const HomePage: React.FC = () => {
             onClick={() => navigate('/stock-update')}
             sx={buttonStyles}
           >
-            Atualizar estoque
+            Atualizar
           </Button>
           <Button
             variant="contained"
             onClick={() => navigate('/view-products')}
             sx={buttonStyles}
           >
-            Consultar estoque
+            Consultar
           </Button>
           <Button
             variant="contained"
             onClick={() => navigate('/add-product')}
             sx={buttonStyles}
           >
-            Adicionar produto
+            Adicionar novo produto
           </Button>
         </AccordionDetails>
       </Accordion>
@@ -101,20 +101,43 @@ const HomePage: React.FC = () => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          Exportar Lista
+          Gerar mensagem automática
         </AccordionSummary>
         <AccordionDetails sx={accordionStyles['& .MuiAccordionDetails-root']}>
           <Button
             onClick={() => { }}
             sx={buttonStyles}
           >
-            Exportar lista completa
+            Lista completa
           </Button>
           <Button
             onClick={() => { }}
             sx={buttonStyles}
           >
-            Selecionar items
+            Selecionar produtos
+          </Button>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion sx={accordionStyles}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          Gerar tabela
+        </AccordionSummary>
+        <AccordionDetails sx={accordionStyles['& .MuiAccordionDetails-root']}>
+          <Button
+            onClick={() => { }}
+            sx={buttonStyles}
+          >
+            Completa
+          </Button>
+          <Button
+            onClick={() => { }}
+            sx={buttonStyles}
+          >
+            Selecionar produtos
           </Button>
         </AccordionDetails>
       </Accordion>

@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from  '../../Configuration/firebase'
 
 export type ProductItem = {
@@ -32,6 +32,43 @@ const initialState: ProductsState = {
   loading: false,
   error: null,
 };
+
+export const updateProductQuantity = createAsyncThunk<
+  void,
+  { id: string; adjustment: number },
+  { rejectValue: string }
+>(
+  'products/updateProductQuantity',
+  async ({ id, adjustment }, { rejectWithValue, dispatch, getState }) => {
+    try {
+      const state = getState() as { products: ProductsState };
+      const product = state.products.products.find((p) => p.id === id);
+
+      if (!product) {
+        return rejectWithValue('Product not found');
+      }
+
+      const newQuantity = product.qtd + adjustment;
+      if (newQuantity < 0) {
+        return rejectWithValue('Cannot reduce quantity below 0');
+      }
+
+      // Update Firestore document
+      const docRef = doc(db, 'products', id);
+      await updateDoc(docRef, { qtd: newQuantity });
+
+      // Optionally, dispatch an action to update local state immediately
+      // or rely on fetching updated data from Firestore
+      dispatch(productQuantityUpdated({ id, qtd: newQuantity }));
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred while updating product quantity.');
+    }
+  }
+);
+
 
 export const fetchProducts = createAsyncThunk<ProductItem[], void, { rejectValue: string }>(
   'products/fetchProducts',
@@ -94,6 +131,12 @@ export const productsSlice = createSlice({
     clearCurrentProduct(state) {
       state.currentProduct = null;
     },
+    productQuantityUpdated(state, action: PayloadAction<{ id: string; qtd: number }>) {
+      const index = state.products.findIndex((product) => product.id === action.payload.id);
+      if (index !== -1) {
+        state.products[index].qtd = action.payload.qtd;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -124,5 +167,5 @@ export const productsSlice = createSlice({
   },
 });
 
-export const { clearCurrentProduct } = productsSlice.actions;
+export const { clearCurrentProduct, productQuantityUpdated } = productsSlice.actions;
 export default productsSlice.reducer;
