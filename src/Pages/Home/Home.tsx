@@ -26,7 +26,7 @@ const HomePage: React.FC = () => {
 
   const buttonStyles = {
     ...centeredTextStyles,
-    backgroundColor: 'rgb(108, 108, 108)', 
+    backgroundColor: 'rgb(108, 108, 108)',
     color: 'white',
     '&:hover': {
       backgroundColor: 'gray', // Slightly lighter black on hover
@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
   };
 
   const accordionStyles = {
-    backgroundColor: 'rgb(108, 108, 108)', 
+    backgroundColor: 'rgb(108, 108, 108)',
     width: "100%",
     color: 'white',
     boxShadow: 'none', // Remove the box shadow from the accordion
@@ -63,20 +63,38 @@ const HomePage: React.FC = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", marginTop: '20px', alignItems: "center", gap: '10px', width: '100%' }}>
-      <Button 
-        variant="contained" 
-        onClick={() => navigate('/view-products')}
-        sx={buttonStyles}
-      >
-        Consultar estoque
-      </Button>
-      <Button 
-        variant="contained" 
-        onClick={() => navigate('/add-product')} 
-        sx={buttonStyles}
-      >
-        Adicionar produto
-      </Button>
+      <Accordion sx={accordionStyles}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          Estoque
+        </AccordionSummary>
+        <AccordionDetails sx={accordionStyles['& .MuiAccordionDetails-root']}>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/stock-update')}
+            sx={buttonStyles}
+          >
+            Atualizar estoque
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/view-products')}
+            sx={buttonStyles}
+          >
+            Consultar estoque
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate('/add-product')}
+            sx={buttonStyles}
+          >
+            Adicionar produto
+          </Button>
+        </AccordionDetails>
+      </Accordion>
       <Accordion sx={accordionStyles}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
@@ -86,14 +104,14 @@ const HomePage: React.FC = () => {
           Exportar Lista
         </AccordionSummary>
         <AccordionDetails sx={accordionStyles['& .MuiAccordionDetails-root']}>
-          <Button 
-            onClick={() => {}}
+          <Button
+            onClick={() => { }}
             sx={buttonStyles}
           >
             Exportar lista completa
           </Button>
-          <Button 
-            onClick={() => {}}
+          <Button
+            onClick={() => { }}
             sx={buttonStyles}
           >
             Selecionar items

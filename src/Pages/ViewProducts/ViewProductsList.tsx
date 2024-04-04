@@ -4,9 +4,10 @@ import { db } from '../../Configuration/firebase'
 import Container from '@mui/material/Container';
 import { Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { AnyObject } from 'yup';
 
 const ViewProductsList: React.FC = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<AnyObject[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -48,7 +49,7 @@ const ViewProductsList: React.FC = () => {
     marginBottom: '32px',
   }}
 >
-  Products List
+  Consultar Estoque
 </Typography>
  
       <TableContainer component={Paper}>
@@ -56,9 +57,9 @@ const ViewProductsList: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>Marca</TableCell>
-              <TableCell align="left">MODELO</TableCell>
-              <TableCell align="left">NOME</TableCell>
-              <TableCell align="right">QTD</TableCell>
+              <TableCell align="left">Modelo</TableCell>
+              <TableCell align="left">Nome</TableCell>
+              <TableCell align="right">Quantidade</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -67,11 +68,11 @@ const ViewProductsList: React.FC = () => {
                 key={product.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="product">
-                  <img src={product.photoURL} alt={product.name} style={{ width: '50px', height: '50px' }} />
-                </TableCell>
-                <TableCell align="left">{product.name}</TableCell>
-                <TableCell align="left">${product.price}</TableCell>
+                
+                <TableCell align="left">{product.marca}</TableCell>
+                <TableCell align="left">{product.modelo}</TableCell>
+                <TableCell align="left">{product.nome}</TableCell>
+                <TableCell align="right">{product.qtd}</TableCell>
                 <TableCell align="right">
                   <Button 
                     sx={{ 
@@ -82,7 +83,7 @@ const ViewProductsList: React.FC = () => {
                     }} 
                     onClick={() => handleEdit(product.id)}
                   >
-                    Edit
+                    Editar
                   </Button>
                   <Button 
                     sx={{ 
@@ -92,7 +93,7 @@ const ViewProductsList: React.FC = () => {
                     }} 
                     onClick={() => handleDelete(product.id)}
                   >
-                    Delete
+                    Deletar
                   </Button>
                 </TableCell>
               </TableRow>

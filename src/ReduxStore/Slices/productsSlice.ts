@@ -4,19 +4,19 @@ import { db } from  '../../Configuration/firebase'
 
 export type ProductItem = {
   id: string;
-  name: string;
-  price: number;
-  description: string;
-  photoURL: string;
+  marca: string;
+  modelo: string;
+  nome: string;
+  qtd: number;
   // Add other properties as needed
 };
 
 export interface CartItem {
   id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  photoURL: string; // Add this line
+  marca: string;
+  modelo: string;
+  nome: string;
+  qtd: number;
 }
 
 type ProductsState = {
@@ -64,7 +64,7 @@ export const fetchProductById = createAsyncThunk<ProductItem, string, { rejectVa
       if (docSnap.exists() && docSnap.data()) {
         const data = docSnap.data();
         // Potentially, add additional validation for the data fields if necessary
-        if (typeof data.name === 'string' && typeof data.price === 'number' && typeof data.description === 'string' && typeof data.photoURL === 'string') {
+        if (typeof data.marca === 'string' && typeof data.modelo === 'string' && typeof data.nome === 'string' && typeof data.qtd === 'number') {
           return { id: docSnap.id, ...data as Omit<ProductItem, 'id'> };
         } else {
           // The document data did not match the expected shape

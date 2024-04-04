@@ -1,61 +1,56 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Menu, MenuItem } from '@mui/material';
-import { useAppSelector } from '../../ReduxStore/hooks'; // Adjust the import path as needed
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
+import { signOutUser } from '../../ReduxStore/Slices/authSlice';
 
 const NavBar: React.FC = () => {
+    const dispatch = useAppDispatch();
     const isAuthenticated = useAppSelector(state => state.auth.authenticated);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleLogout = () => {
+        dispatch(signOutUser());
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const goHome = () => {
+        navigate('/home');
     };
+
+    // Check if the current path is one of the specified routes
+    const shouldShowBackButton = ['/view-products', '/add-product', '/edit-product'].some(
+        path => location.pathname === path || location.pathname.startsWith(`${path}/`)
+    );
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: 'black' }}>
-            <Toolbar>
-                <a href='/home'>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'white' }}>
+        <AppBar position="static" sx={{ backgroundColor: 'black', flexDirection: 'row' }}>
+            <Toolbar sx={{ justifyContent: 'space-between', width: '100%' }}>
+                <Typography variant="h6" component="div" sx={{ color: 'white' }}>
+                    <a href='/home' style={{ textDecoration: 'none', color: 'inherit' }}>
                         e-stock
-                    </Typography>
-                </a>
-                {/* {isAuthenticated && (
-                    <>
-                        <Button
-                            id="menu-button"
-                            aria-controls={open ? 'menu-appbar' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleMenuClick}
-                            sx={{ color: 'white' }}
-                        >
-                            Menu
+                    </a>
+                </Typography>
+
+                {isAuthenticated && (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {shouldShowBackButton && (
+                            <>
+                                <IconButton color="inherit" onClick={goHome}>
+                                    <ArrowBackIcon />
+                                </IconButton>
+                                <Typography variant="button" color="inherit" onClick={goHome} sx={{ cursor: 'pointer' }}>
+                                    Voltar
+                                </Typography>
+                            </>
+                        )}
+                        {shouldShowBackButton && <Box sx={{ bgcolor: 'white', width: '2px', height: '35px', mx: 2 }} />}
+                        <Button color="inherit" onClick={handleLogout}>
+                            Sair da Conta
                         </Button>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={open}
-                            onClose={handleMenuClose}
-                        >
-                            <MenuItem onClick={handleMenuClose}>Gerenciar e-stock</MenuItem>
-                            <MenuItem onClick={handleMenuClose}>Consultar e-stock</MenuItem>
-                            <MenuItem onClick={handleMenuClose}>Exportar contagem</MenuItem>
-                        </Menu>
-                    </>
-                )} */}
+                    </Box>
+                )}
             </Toolbar>
         </AppBar>
     );

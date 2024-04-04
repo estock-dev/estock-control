@@ -1,13 +1,9 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
+import { useState } from 'react';
+import { Container, TextField, Button, Box, Typography, Paper, Alert } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { db } from '../../Configuration/firebase'
 import { addDoc, collection } from 'firebase/firestore';
-import { useState } from 'react';
+import { db } from '../../Configuration/firebase';
 
 const AddProductSchema = Yup.object().shape({
   marca: Yup.string().required('Required'),
@@ -16,22 +12,15 @@ const AddProductSchema = Yup.object().shape({
   qtd: Yup.number().min(0, 'Quantity cannot be negative').required('Required'),
 });
 
-interface FormValues {
-  marca: string;
-  modelo: string;
-  nome: string;
-  qtd: number;
-}
-
 const AddProduct = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const formik = useFormik<FormValues>({
+  const formik = useFormik({
     initialValues: {
       marca: '',
       modelo: '',
       nome: '',
-      qtd: 0
+      qtd: 0,
     },
     validationSchema: AddProductSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
@@ -39,12 +28,9 @@ const AddProduct = () => {
       setSubmitError(null);
 
       try {
-
         const docRef = await addDoc(collection(db, 'products'), {
-          marca: values.marca,
-          modelo: values.modelo,
-          nome: values.nome,
-          qtd: Number(values.qtd),
+          ...values,
+          qtd: Number(values.qtd), // Ensure the quantity is stored as a number
         });
 
         console.log('Document written with ID: ', docRef.id);
@@ -53,107 +39,98 @@ const AddProduct = () => {
       } catch (error) {
         console.error('Error adding product: ', error);
         setSubmitError(error instanceof Error ? error.message : String(error));
-        alert('Error adding product, please try again.');
       }
 
       setSubmitting(false);
     },
   });
-  const formFieldStyles = {
-    marginBottom: '10px',
-    '& .MuiInputBase-root': {
-      color: 'black', // Set text color
-    },
-    '& .MuiInputLabel-root': {
-      color: 'black', // Set label color
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'black', // Set border color
-    },
-  };
-
-  const buttonStyles = {
-    backgroundColor: 'black',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    },
-  };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '500px', margin: 'auto' }}>
+    <Container maxWidth="lg">
       <Typography
         variant="h2"
         sx={{
-          fontWeight: 'bold', // This makes the font bolder
-          fontSize: '24px', // Adjust the font size as needed
-          color: 'rgb(108, 108, 108)', // This is typically the default for MUI Typography
-          letterSpacing: '0.00735em', // Standard MUI letter spacing for h2 variant
+          fontWeight: 'bold',
+          fontSize: '24px',
+          color: 'rgb(108, 108, 108)',
+          letterSpacing: '0.00735em',
           textAlign: 'left',
           marginTop: '20px',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.42)', // This adds the underline similar to the screenshot
-          paddingBottom: '8px', // This gives some space between the text and the underline
-          marginBottom: '32px', // Adds margin below the title for spacing
+          borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
+          paddingBottom: '8px',
+          marginBottom: '32px',
         }}
       >
-        Adicionar produto
+        Adicionar Produto
       </Typography>
-      {submitError && <Alert severity="error">{submitError}</Alert>}
-      <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
-        <TextField
-          label="Marca"
-          id="marca"
-          name="marca"
-          type="text"
-          onChange={formik.handleChange}
-          value={formik.values.marca}
-          error={formik.touched.marca && Boolean(formik.errors.marca)}
-          helperText={formik.touched.marca && formik.errors.marca}
-          variant="outlined"
-          sx={formFieldStyles}
-        />
-        <TextField
-          label="Modelo"
-          id="modelo"
-          name="modelo"
-          type="text"
-          onChange={formik.handleChange}
-          value={formik.values.modelo}
-          error={formik.touched.modelo && Boolean(formik.errors.modelo)}
-          helperText={formik.touched.modelo && formik.errors.modelo}
-          variant="outlined"
-          sx={formFieldStyles}
-        />
-        <TextField
-          label="Nome"
-          id="nome"
-          name="nome"
-          type="text"
-          onChange={formik.handleChange}
-          value={formik.values.nome}
-          error={formik.touched.nome && Boolean(formik.errors.nome)}
-          helperText={formik.touched.nome && formik.errors.nome}
-          variant="outlined"
-          sx={formFieldStyles}
-        />
-        <TextField
-          label="Quantity"
-          id="qtd"
-          name="qtd"
-          type="number"
-          onChange={formik.handleChange}
-          value={formik.values.qtd}
-          error={formik.touched.qtd && Boolean(formik.errors.qtd)}
-          helperText={formik.touched.qtd && formik.errors.qtd}
-          variant="outlined"
-          sx={formFieldStyles}
-        />
-
-        <Button type="submit" disabled={formik.isSubmitting} sx={buttonStyles}>
-          Add Product
-        </Button>
-      </Box>
-    </Box>
+      <Paper elevation={2} sx={{ padding: '24px', marginBottom: '24px' }}>
+        {submitError && <Alert severity="error">{submitError}</Alert>}
+        <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <TextField
+            label="Marca"
+            id="marca"
+            name="marca"
+            type="text"
+            onChange={formik.handleChange}
+            value={formik.values.marca}
+            error={formik.touched.marca && Boolean(formik.errors.marca)}
+            helperText={formik.touched.marca && formik.errors.marca}
+            margin="normal"
+            sx={{ marginBottom: '10px' }}
+          />
+          <TextField
+            label="Modelo"
+            id="modelo"
+            name="modelo"
+            type="text"
+            onChange={formik.handleChange}
+            value={formik.values.modelo}
+            error={formik.touched.modelo && Boolean(formik.errors.modelo)}
+            helperText={formik.touched.modelo && formik.errors.modelo}
+            margin="normal"
+            sx={{ marginBottom: '10px' }}
+          />
+          <TextField
+            label="Nome"
+            id="nome"
+            name="nome"
+            type="text"
+            onChange={formik.handleChange}
+            value={formik.values.nome}
+            error={formik.touched.nome && Boolean(formik.errors.nome)}
+            helperText={formik.touched.nome && formik.errors.nome}
+            margin="normal"
+            sx={{ marginBottom: '10px' }}
+          />
+          <TextField
+            label="Quantidade"
+            id="qtd"
+            name="qtd"
+            type="number"
+            onChange={formik.handleChange}
+            value={formik.values.qtd}
+            error={formik.touched.qtd && Boolean(formik.errors.qtd)}
+            helperText={formik.touched.qtd && formik.errors.qtd}
+            margin="normal"
+            sx={{ marginBottom: '10px' }}
+          />
+          <Button
+            type="submit"
+            disabled={formik.isSubmitting}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              },
+              marginTop: '20px',
+            }}
+          >
+            Adicionar Produto
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
