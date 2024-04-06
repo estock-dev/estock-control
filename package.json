@@ -14,9 +14,11 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.15",
+    "@mui/x-data-grid": "^7.1.1",
     "@reduxjs/toolkit": "^2.2.3",
     "firebase": "^10.6.0",
     "formik": "^2.4.5",
+    "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",
@@ -26,6 +28,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/papaparse": "^5.3.14",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
