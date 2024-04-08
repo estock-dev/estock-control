@@ -118,29 +118,7 @@ const HomePage: React.FC = () => {
           </Button>
         </AccordionDetails>
       </Accordion>
-      <Accordion sx={accordionStyles}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          Gerar tabela
-        </AccordionSummary>
-        <AccordionDetails sx={accordionStyles['& .MuiAccordionDetails-root']}>
-          <Button
-            onClick={() => { }}
-            sx={buttonStyles}
-          >
-            Completa
-          </Button>
-          <Button
-            onClick={() => { }}
-            sx={buttonStyles}
-          >
-            Selecionar produtos
-          </Button>
-        </AccordionDetails>
-      </Accordion>
+    
       <Outlet />
     </div>
   );

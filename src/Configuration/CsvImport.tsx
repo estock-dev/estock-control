@@ -13,7 +13,7 @@ const ImportProductsCSV = () => {
                 complete: (result) => {
                     uploadProducts(result.data as { marca: string; modelo: string; nome: string; qtd: number; }[]);
                 },
-                header: true, // Assumes your CSV has headers
+                header: true, 
                 skipEmptyLines: true,
             });
         }
@@ -22,20 +22,20 @@ const ImportProductsCSV = () => {
     const uploadProducts = async (products: { marca: string; modelo: string; nome: string; qtd: number; }[]) => {
         const collectionRef = collection(db, 'products');
         let batch = writeBatch(db);
-        const BATCH_SIZE = 500; // Firestore limits batches to 500 operations
+        const BATCH_SIZE = 500; 
 
         for (let i = 0; i < products.length; i++) {
-            const docRef = doc(collectionRef); // automatically generate new document IDs
+            const docRef = doc(collectionRef); 
             batch.set(docRef, products[i]);
 
-            // Commit the batch every 500 writes and start a new batch
+            
             if (i % BATCH_SIZE === 0) {
                 await batch.commit();
                 batch = writeBatch(db);
             }
         }
 
-        // Commit any remaining operations in the last batch
+        
         if (products.length % BATCH_SIZE !== 0) {
             await batch.commit();
         }

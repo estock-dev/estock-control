@@ -47,10 +47,10 @@ const ViewProductsList: React.FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'MARCA', headerName: 'MARCA', width: 130},
-    { field: 'MODELO', headerName: 'MODELO', width: 200},
-    { field: 'NOME', headerName: 'NOME', width: 200},
-    { field: 'QTD', headerName: 'QUANTIDADE', type: 'number', width: 130, headerAlign: 'right', align: 'right'},
+    { field: 'marca', headerName: 'MARCA', width: 130},
+    { field: 'modelo', headerName: 'MODELO', width: 200},
+    { field: 'nome', headerName: 'NOME', width: 200},
+    { field: 'qtd', headerName: 'QUANTIDADE', type: 'number', width: 130, headerAlign: 'right', align: 'right'},
     {
       field: 'actions',
       headerName: '',
