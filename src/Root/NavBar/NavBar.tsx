@@ -25,7 +25,7 @@ const NavBar: React.FC = () => {
     );
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: 'black', flexDirection: 'row' }}>
+        <AppBar position="static" sx={{ backgroundColor: '#685686;', flexDirection: 'row', minWidth: '100vw' }}>
             <Toolbar sx={{ justifyContent: 'space-between', width: '100%' }}>
                 <Typography variant="h6" component="div" sx={{ color: 'white' }}>
                     <a href='/home' style={{ textDecoration: 'none', color: 'inherit' }}>

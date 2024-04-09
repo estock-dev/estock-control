@@ -1,13 +1,12 @@
-// ViewProductsList.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
 import { useNavigate } from 'react-router-dom';
 import ImportProductsCSV from '../../Configuration/CsvImport';
-import { Table, Button, Popconfirm, Typography, Space } from 'antd';
+import { Table, Button, Typography, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
-import './ViewProductsList.css'; // Import the custom CSS for this component
+import './ViewProductsList.css';
 
 interface Product {
   key: React.Key;
@@ -20,8 +19,9 @@ interface Product {
 const ViewProductsList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [showImport, setShowImport] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(10);
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,8 +44,24 @@ const ViewProductsList: React.FC = () => {
     setProducts(products.filter((product) => product.key !== id));
   };
 
+  const handleMultipleDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete these products?");
+    if (confirmDelete) {
+      const deletePromises = selectedRowKeys.map((key) => {
+        return deleteDoc(doc(db, 'products', key.toString()));
+      });
+      await Promise.all(deletePromises);
+      setProducts(products.filter(product => !selectedRowKeys.includes(product.key)));
+      setSelectedRowKeys([]);
+    }
+  };
+
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const handlePageSizeChange = (current: number, size: number) => {
+    setPageSize(size);
   };
 
   const rowSelection = {
@@ -97,10 +113,6 @@ const ViewProductsList: React.FC = () => {
       sorter: (a, b) => a.qtd - b.qtd,
       filterMultiple: false,
       onFilter: (value, record) => record.qtd === Number(value),
-      filters: [...new Set(products.map((item) => item.qtd))].map((qtd) => ({
-        text: qtd,
-        value: qtd,
-      })),
     },
     {
       title: ' ',
@@ -121,23 +133,41 @@ const ViewProductsList: React.FC = () => {
     },
   ];
 
-
   return (
     <div className="view-products-list">
       <Typography.Title level={2} className="title">
         Consultar Estoque
       </Typography.Title>
+
       <Table
         rowSelection={rowSelection}
         columns={columns}
         dataSource={products}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          pageSize: pageSize,
+          onShowSizeChange: handlePageSizeChange,
+          showSizeChanger: true,
+        }}
         className="customTable"
       />
-      <Typography.Link onClick={() => setShowImport(!showImport)} className="import-csv-link">
-        Import CSV
-      </Typography.Link>
-      {showImport && <ImportProductsCSV />}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline' }}>
+        <Button
+          onClick={handleMultipleDelete}
+          danger
+          disabled={selectedRowKeys.length === 0}
+          style={{ marginRight: 8 }}
+        >
+          Delete selected
+        </Button>
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Import CSV
+        </Button>
+      </div>
+
+      <ImportProductsCSV ref={fileInputRef} />
     </div>
   );
 };

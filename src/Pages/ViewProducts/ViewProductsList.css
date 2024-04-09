@@ -1,26 +1,66 @@
-/* ViewProductsList.css */
+.view-products-list {
+    padding: 24px;
+}
+
+.view-products-list .customTable {
+    margin: 24px auto;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.view-products-list .customTable .ant-table {
+    min-width: 550px;
+    width: 100%;
+}
+
+.view-products-list .customTable .ant-table-tbody>tr>td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    line-height: normal;
+}
+
+.view-products-list .customTable .ant-table-thead>tr>td:last-child {
+    min-height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    line-height: normal;
+}
+
+@media screen and (max-width: 600px) {
+    .view-products-list .customTable {
+        min-width: 400px;
+        margin: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .view-products-list .customTable .ant-table-pagination {
+        margin: 10px 0;
+    }
+}
+
 .view-products-list .customTable .ant-table-cell {
-    padding: 4px; /* Corrected padding with 'px' unit */
-  }
-  
-  .view-products-list .customTable .ant-table-thead > tr > th {
-    padding: 16px 8px; /* Adjust the padding for the header row */
-  }
-  
-  .view-products-list .customTable {
-    margin: 0 24px; /* Adjust side margins of the table */
-  }
-  
-  .view-products-list .customTable .ant-table-pagination {
-    margin-right: 16px; /* Align the pagination to the right side of the table */
-  }
-  
-  .view-products-list .title {
+    padding: 4px;
+}
+
+.view-products-list .customTable .ant-table-thead>tr>th {
+    padding: 16px 8px;
+}
+
+.view-products-list .customTable .ant-table-pagination {
+    margin-right: 16px;
+}
+
+.view-products-list .title {
     margin-bottom: 32px;
-  }
-  
-  .view-products-list .import-csv-link {
+}
+
+.view-products-list .import-csv-link {
     margin-top: 16px;
-    display: block;
-  }
-  
+    display: block
+}

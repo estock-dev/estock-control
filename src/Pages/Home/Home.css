@@ -1,0 +1,50 @@
+.site-collapse-custom-collapse {
+    border-radius: 2px;
+    margin-bottom: 24px;
+    width: 50%;
+    background-color: unset;
+}
+
+.site-collapse-custom-panel {
+    background: #685686;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    color: #333;
+    border: 0px;
+}
+
+.ant-collapse-content-box {
+    padding: 0;
+}
+
+.ant-btn-primary {
+    background-color: #8b72b1;
+    border-color: #8b72b1;
+    color: #ffffff;
+    margin-top: 8px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.ant-btn-primary:hover {
+    background-color: #3b233b !important;
+    border-color: #3b233b !important;
+}
+
+
+.ant-collapse-header,
+.ant-collapse-content {
+    color: #333;
+}
+
+.ant-collapse-header:hover {
+    background: #3b233b
+}
+
+.ant-collapse-borderless>.ant-collapse-item:last-child {
+    border-radius: 4px;
+}
+
+.ant-collapse>.ant-collapse-item>.ant-collapse-header {
+    color: #ffffff;
+}
