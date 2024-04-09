@@ -5,6 +5,12 @@
     background-color: unset;
 }
 
+@media screen and (max-width: 600px) {
+    .site-collapse-custom-collapse {
+        width: 100%;
+    }
+}
+
 .site-collapse-custom-panel {
     background: #685686;
     border-radius: 4px;
