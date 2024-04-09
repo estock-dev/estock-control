@@ -1,15 +1,16 @@
+// ViewProductsList.tsx
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
-import { Container, Typography, IconButton } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import ImportProductsCSV from '../../Configuration/CsvImport';
+import { Table, Button, Popconfirm, Typography, Space } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ColumnsType } from 'antd/es/table';
+import './ViewProductsList.css'; // Import the custom CSS for this component
 
 interface Product {
-  id: string;
+  key: React.Key;
   marca: string;
   modelo: string;
   nome: string;
@@ -18,6 +19,7 @@ interface Product {
 
 const ViewProductsList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [showImport, setShowImport] = useState(false);
   const navigate = useNavigate();
 
@@ -25,95 +27,118 @@ const ViewProductsList: React.FC = () => {
     const fetchProducts = async () => {
       const querySnapshot = await getDocs(collection(db, 'products'));
       setProducts(querySnapshot.docs.map((docSnapshot) => ({
-        id: docSnapshot.id, 
-        ...docSnapshot.data() 
+        key: docSnapshot.id,
+        ...docSnapshot.data(),
       }) as Product));
     };
 
     fetchProducts();
   }, []);
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (id: React.Key) => {
     navigate(`/edit-product/${id}`);
   };
 
-  const handleDelete = async (id: string, event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
-    if (confirmDelete) {
-      await deleteDoc(doc(db, 'products', id));
-      setProducts(products.filter((product) => product.id !== id));
-    }
+  const handleDelete = async (id: React.Key) => {
+    await deleteDoc(doc(db, 'products', id.toString()));
+    setProducts(products.filter((product) => product.key !== id));
   };
 
-  const columns: GridColDef[] = [
-    { field: 'marca', headerName: 'MARCA', width: 130},
-    { field: 'modelo', headerName: 'MODELO', width: 200},
-    { field: 'nome', headerName: 'NOME', width: 200},
-    { field: 'qtd', headerName: 'QUANTIDADE', type: 'number', width: 130, headerAlign: 'right', align: 'right'},
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const columns: ColumnsType<Product> = [
     {
-      field: 'actions',
-      headerName: '',
-      sortable: false,
-      flex: 1,
-      renderCell: (params: GridRenderCellParams) => (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          height: '100%'
-        }}>
-          <IconButton onClick={(event) => {
-            event.stopPropagation();
-            handleEdit(String(params.id));
-          }}>
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={(event) => handleDelete(String(params.id), event)}>
-            <DeleteIcon />
-          </IconButton>
-        </div>
+      title: 'MARCA',
+      dataIndex: 'marca',
+      key: 'marca',
+      sorter: (a, b) => a.marca.localeCompare(b.marca),
+      filterMultiple: false,
+      onFilter: (value, record) => record.marca.includes(value as string),
+      filters: [...new Set(products.map((item) => item.marca))].map((marca) => ({
+        text: marca,
+        value: marca,
+      })),
+    },
+    {
+      title: 'MODELO',
+      dataIndex: 'modelo',
+      key: 'modelo',
+      sorter: (a, b) => a.modelo.localeCompare(b.modelo),
+      filterMultiple: false,
+      onFilter: (value, record) => record.modelo.includes(value as string),
+      filters: [...new Set(products.map((item) => item.modelo))].map((modelo) => ({
+        text: modelo,
+        value: modelo,
+      })),
+    },
+    {
+      title: 'NOME',
+      dataIndex: 'nome',
+      key: 'nome',
+      sorter: (a, b) => a.nome.localeCompare(b.nome),
+      filterMultiple: false,
+      onFilter: (value, record) => record.nome.includes(value as string),
+      filters: [...new Set(products.map((item) => item.nome))].map((nome) => ({
+        text: nome,
+        value: nome,
+      })),
+    },
+    {
+      title: 'QTD',
+      dataIndex: 'qtd',
+      key: 'qtd',
+      sorter: (a, b) => a.qtd - b.qtd,
+      filterMultiple: false,
+      onFilter: (value, record) => record.qtd === Number(value),
+      filters: [...new Set(products.map((item) => item.qtd))].map((qtd) => ({
+        text: qtd,
+        value: qtd,
+      })),
+    },
+    {
+      title: ' ',
+      key: 'action',
+      render: (_, record: Product) => (
+        <Space size="middle">
+          <Button onClick={() => handleEdit(record.key)} icon={<EditOutlined />} />
+          <Popconfirm
+            title="Are you sure to delete this product?"
+            onConfirm={() => handleDelete(record.key)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
+
   return (
-    <Container maxWidth="lg">
-      <Typography
-        variant="h2"
-        sx={{
-          fontWeight: 'bold',
-          fontSize: '24px',
-          color: 'rgb(108, 108, 108)',
-          letterSpacing: '0.00735em',
-          textAlign: 'left',
-          marginTop: '20px',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-          paddingBottom: '8px',
-          marginBottom: '32px',
-        }}
-      >
+    <div className="view-products-list">
+      <Typography.Title level={2} className="title">
         Consultar Estoque
-      </Typography>
-      
-      <DataGrid
-        rows={products}
+      </Typography.Title>
+      <Table
+        rowSelection={rowSelection}
         columns={columns}
-        checkboxSelection
-        autoHeight
-        rowHeight={30} // Smaller row height
+        dataSource={products}
+        pagination={{ pageSize: 10 }}
+        className="customTable"
       />
-      
-      <Typography
-        sx={{ cursor: 'pointer', mt: 2 }}
-        onClick={() => setShowImport(!showImport)}
-        color="primary"
-      >
+      <Typography.Link onClick={() => setShowImport(!showImport)} className="import-csv-link">
         Import CSV
-      </Typography>
-      
+      </Typography.Link>
       {showImport && <ImportProductsCSV />}
-    </Container>
+    </div>
   );
 };
 

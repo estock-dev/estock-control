@@ -1,0 +1,26 @@
+/* ViewProductsList.css */
+.view-products-list .customTable .ant-table-cell {
+    padding: 4px; /* Corrected padding with 'px' unit */
+  }
+  
+  .view-products-list .customTable .ant-table-thead > tr > th {
+    padding: 16px 8px; /* Adjust the padding for the header row */
+  }
+  
+  .view-products-list .customTable {
+    margin: 0 24px; /* Adjust side margins of the table */
+  }
+  
+  .view-products-list .customTable .ant-table-pagination {
+    margin-right: 16px; /* Align the pagination to the right side of the table */
+  }
+  
+  .view-products-list .title {
+    margin-bottom: 32px;
+  }
+  
+  .view-products-list .import-csv-link {
+    margin-top: 16px;
+    display: block;
+  }
+  
