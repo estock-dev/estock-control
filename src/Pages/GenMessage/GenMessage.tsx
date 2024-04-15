@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
-import { message as antdMessage, Row, Col, Tabs, Switch, Menu, Button } from 'antd';
+import { Row, Col, Tabs, Switch, Menu } from 'antd';
 import { motion } from 'framer-motion';
-import FindProduct from './FindProduct'
+import FindProduct from './TabPanels/FindProduct';
+import { Divider } from 'antd';
+import { Button } from 'antd'
+import CopyOutlined from '@ant-design/icons';
 
 interface Product {
   marca: string;
@@ -34,16 +37,16 @@ const GenMessage: React.FC = () => {
     switch (selectedKey) {
       case 'marcas':
         const uniqueMarcas = Array.from(new Set(products.map(p => p.marca))).sort();
-        message = `Available marcas:\n${uniqueMarcas.join('\n')}`;
+        message = `Segue lista de marcas disponíveis a pronta entrega:\n${uniqueMarcas.join('\n')}`;
         break;
       case 'modelos':
         const uniqueModelos = Array.from(new Set(products.map(p => p.modelo))).sort();
-        message = `Available modelos:\n${uniqueModelos.join('\n')}`;
+        message = `Segue a lista de modelos disponíveis a pronta entrega:\n${uniqueModelos.join('\n')}`;
         break;
       case 'details':
         const details = products.map(p => `${p.modelo} ${p.nome}` + (includeQuantity ? ` (${p.qtd})` : '')).sort();
         const uniqueDetails = Array.from(new Set(details));
-        message = `Available detailed products:\n${uniqueDetails.join('\n')}`;
+        message = `Segue a lista de produtos disponíveis a pronta entrega: \n${uniqueDetails.join('\n')}`;
         break;
       default:
         message = '';
@@ -51,19 +54,14 @@ const GenMessage: React.FC = () => {
     setFormattedMessage(message);
   }, [products, selectedKey, includeQuantity]);
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(
-      () => antdMessage.success('Text copied to clipboard!'),
-      (err) => antdMessage.error('Failed to copy text: ', err)
-    );
-  };
+
 
   const showSwitch = selectedKey === 'details';
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '2000px', margin: '0 auto' }}>
       <Tabs defaultActiveKey="1">
-        <TabPane tab="Full List" key="1">
+        <TabPane tab="Lista Completa" key="1">
           <Row>
             <Col span={6} style={{ minHeight: '100vh', borderRight: '1px solid #f0f0f0' }}>
               <Menu
@@ -72,27 +70,32 @@ const GenMessage: React.FC = () => {
                 style={{ borderRight: 'none' }}
               >
                 <Menu.Item key="marcas" onClick={() => setSelectedKey('marcas')}>
-                  Available Marcas
+                  Marcas
                 </Menu.Item>
                 <Menu.Item key="modelos" onClick={() => setSelectedKey('modelos')}>
-                  Available Modelos
+                  Modelos
                 </Menu.Item>
                 <Menu.Item key="details" onClick={() => setSelectedKey('details')}>
-                  Available Detailed Products
+                  Produtos Detalhados
                 </Menu.Item>
+
               </Menu>
+
               {showSwitch && (
                 <div style={{ padding: '16px', paddingTop: '24px' }}>
                   <Switch
-                    checkedChildren="Include quantity"
-                    unCheckedChildren="Exclude quantity"
+                    checkedChildren="Quantidade incluída"
+                    unCheckedChildren="Clique para incluir quantidade"
                     checked={includeQuantity}
                     onChange={() => setIncludeQuantity(!includeQuantity)}
                   />
                 </div>
               )}
+              <Divider />
+
             </Col>
-            <Col span={18} style={{ padding: '24px' }}>
+            <Col span={12} style={{ padding: '24px' }}>
+            <div style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto', width: '100%' }}>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -100,30 +103,50 @@ const GenMessage: React.FC = () => {
               >
                 <pre>{formattedMessage}</pre>
               </motion.div>
-            </Col>
-          </Row>
-        </TabPane>
-        <TabPane tab="Find Product" key="2">
-          <FindProduct setFormattedMessage={setFormattedMessage} />
-        </TabPane>
-        <TabPane style={{ justifyContent: "right" }}>
-          {formattedMessage && (
+            </div>
+          </Col>
+          <Col span={1}>
+            <Divider type="vertical" style={{ height: '100vh' }} />
+          </Col>
+          <Col span={5} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              style={{ position: 'absolute', right: '10px', top: '10px' }}
             >
-              <Button onClick={() => navigator.clipboard.writeText(formattedMessage)}>
-                Copy Text
+              <Button
+                icon={<CopyOutlined />}
+                onClick={() => {
+                  navigator.clipboard.writeText(formattedMessage).then(
+                    () => {
+                      console.log('Text copied to clipboard');
+                    },
+                    () => {
+                      console.error('Failed to copy text to clipboard');
+                    }
+                  );
+                }}
+              >
+                COPY TEXT
               </Button>
             </motion.div>
-          )}
+          </Col>
+        </Row>
+      </TabPane>        <TabPane tab="Lista de Produtos" key="2">
+          <FindProduct />
         </TabPane>
       </Tabs>
+
 
     </div>
   );
 };
 
 export default GenMessage;
+
+// const copyToClipboard = (text: string) => {
+//   navigator.clipboard.writeText(text).then(
+//     () => antdMessage.success('Texto copiado! Agora é só colar onde quiser'),
+//     (err) => antdMessage.error('A cópia do texto falhou :( Por favor, tente novamente. ', err)
+//   );
+// };

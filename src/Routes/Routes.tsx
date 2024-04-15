@@ -7,7 +7,8 @@ import AddProduct from "../Pages/AddProducts/AddProduct";
 import ViewProductsList from "../Pages/ViewProducts/ViewProductsList";
 import RequireAuthGuard from "./RequireAuthGuard";
 import Layout from "../Root/Layout/Layout";
-import StockUpdate from "../Pages/StockUpdate/StockUpdate";
+import UpdateStockContainer from "../Pages/UpdateStockContainer/UpdateStockContainer";
+import ConsultStockContainer from '../Pages/ConsultStockContainer/ConsultStockContainer'
 
 const routes: RouteObject[] = [
   {
@@ -22,7 +23,8 @@ const routes: RouteObject[] = [
       { path: 'edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'add-product', element: <RequireAuthGuard><AddProduct /></RequireAuthGuard> },
-      { path: '/stock-update', element: <RequireAuthGuard><StockUpdate /></RequireAuthGuard>, },
+      { path: 'stock-update', element: <RequireAuthGuard><UpdateStockContainer/></RequireAuthGuard>, },
+      { path: 'stock-consult', element: <RequireAuthGuard><ConsultStockContainer/></RequireAuthGuard>, },
       
       // ... potentially other protected routes
     ],

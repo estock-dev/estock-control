@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { query, where, collection, getDocs, doc, getDoc, updateDoc, FirestoreError } from 'firebase/firestore';
 import { db } from  '../../Configuration/firebase'
+import type { RootState } from '../store';
+
 
 export type ProductItem = {
   id: string;
@@ -19,19 +21,38 @@ export interface CartItem {
   qtd: number;
 }
 
-type ProductsState = {
+interface Model {
+  name: string;
+  // ...other properties
+}
+
+interface ProductsState {
   products: ProductItem[];
-  currentProduct: ProductItem | null; // Add a state field for the current product
+  currentProduct: ProductItem | null;
+  includeQuantity: boolean; // Newly added state
+  selectedKey: string; // Newly added state
+  formattedMessage: string; // Newly added state
   loading: boolean;
   error: string | null;
-};
+  selectedProducts: ProductItem[];
+  brands: string[];
+  models: string[];
+}
+
 
 const initialState: ProductsState = {
   products: [],
-  currentProduct: null, // Initialize currentProduct as null
+  currentProduct: null, 
   loading: false,
   error: null,
+  includeQuantity: false, 
+  selectedKey: 'marcas', 
+  formattedMessage: '',
+  selectedProducts: [],
+  brands: [],
+  models: [],
 };
+
 
 export const updateProductQuantity = createAsyncThunk<
   void,
@@ -57,8 +78,6 @@ export const updateProductQuantity = createAsyncThunk<
       const docRef = doc(db, 'products', id);
       await updateDoc(docRef, { qtd: newQuantity });
 
-      // Optionally, dispatch an action to update local state immediately
-      // or rely on fetching updated data from Firestore
       dispatch(productQuantityUpdated({ id, qtd: newQuantity }));
     } catch (error) {
       if (error instanceof Error) {
@@ -69,6 +88,24 @@ export const updateProductQuantity = createAsyncThunk<
   }
 );
 
+export const fetchModelsForBrand = createAsyncThunk<string[], string, { rejectValue: string }>(
+  'products/fetchModelsForBrand',
+  async (brand, { rejectWithValue }) => {
+    try {
+      const modelsQuery = query(collection(db, 'models'), where('brand', '==', brand));
+      const querySnapshot = await getDocs(modelsQuery);
+      // TypeScript now understands the shape of your data
+      const models = querySnapshot.docs.map((doc) => (doc.data() as Model).name);
+      return models;
+    } catch (error) {
+      // If error is an instance of FirestoreError, you can get more detailed error information
+      if (error instanceof FirestoreError) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred while fetching models.');
+    }
+  }
+);
 
 export const fetchProducts = createAsyncThunk<ProductItem[], void, { rejectValue: string }>(
   'products/fetchProducts',
@@ -122,6 +159,10 @@ export const fetchProductById = createAsyncThunk<ProductItem, string, { rejectVa
   }
 );
 
+export const selectAllBrands = (state: RootState) => {
+  const brands = state.products.products.map((product) => product.marca);
+  return [...new Set(brands)]; // Return unique brands
+};
 
 export const productsSlice = createSlice({
   name: 'products',
@@ -137,6 +178,25 @@ export const productsSlice = createSlice({
         state.products[index].qtd = action.payload.qtd;
       }
     },
+    setSelectedKey(state, action: PayloadAction<string>) {
+      state.selectedKey = action.payload;
+    },
+    toggleQuantityIncluded(state) {
+      state.includeQuantity = !state.includeQuantity;
+    },
+    setFormattedMessage(state, action: PayloadAction<string>) {
+      state.formattedMessage = action.payload;
+    },
+    selectProduct(state, action: PayloadAction<ProductItem>) {
+      state.selectedProducts.push(action.payload);
+    },
+    removeSelectedProduct(state, action: PayloadAction<string>) {
+      state.selectedProducts = state.selectedProducts.filter(product => product.id !== action.payload);
+    },
+    setIncludeQuantity(state, action: PayloadAction<boolean>) {
+      state.includeQuantity = action.payload;
+    },
+  
   },
   extraReducers: (builder) => {
     builder
@@ -147,18 +207,22 @@ export const productsSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.products = action.payload;
         state.loading = false;
+        state.brands = action.payload.map((product) => product.marca);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch products.';
       })
-      // Handle the fetchProductById actions
+      .addCase(fetchModelsForBrand.fulfilled, (state, action) => {
+        state.models = action.payload;
+      })
       .addCase(fetchProductById.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchProductById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentProduct = action.payload; // Set the fetched product as currentProduct
+        state.currentProduct = action.payload; 
+        
       })
       .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
@@ -167,5 +231,6 @@ export const productsSlice = createSlice({
   },
 });
 
-export const { clearCurrentProduct, productQuantityUpdated } = productsSlice.actions;
+export const { clearCurrentProduct, productQuantityUpdated, setFormattedMessage, setSelectedKey, toggleQuantityIncluded, selectProduct, removeSelectedProduct, setIncludeQuantity } = productsSlice.actions;
+
 export default productsSlice.reducer;

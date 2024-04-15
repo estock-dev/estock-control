@@ -1,136 +1,195 @@
-import { useState } from 'react';
-import { Container, TextField, Button, Box, Typography, Paper, Alert } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, TextField, Button, Box, Typography, Paper, Alert, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Autocomplete } from '@mui/material';
+import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
+import { fetchProducts, fetchModelsForBrand } from '../../ReduxStore/Slices/productsSlice';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
+import { useNavigate } from 'react-router-dom'; 
 
-const AddProductSchema = Yup.object().shape({
-  marca: Yup.string().required('Required'),
-  modelo: Yup.string().required('Required'),
-  nome: Yup.string().required('Required'),
-  qtd: Yup.number().min(0, 'Quantity cannot be negative').required('Required'),
+const validationSchema = yup.object({
+  marca: yup.string().required('Brand is required'),
+  modelo: yup.string().required('Model is required'),
+  nome: yup.string().required('Name is required'),
+  qtd: yup.number().positive('Quantity must be positive').required('Quantity is required'),
 });
 
 const AddProduct = () => {
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(state => state.products.products);
+  const brands = Array.from(new Set(products.map(product => product.marca)));
+  const navigate = useNavigate(); 
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
+      brandOption: 'existing',
+      modelOption: 'existing',
       marca: '',
       modelo: '',
       nome: '',
-      qtd: 0,
+      qtd: '',
     },
-    validationSchema: AddProductSchema,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      setSubmitting(true);
-      setSubmitError(null);
-
+    validationSchema: validationSchema,
+     onSubmit: async ({ brandOption, modelOption, ...values }) => {
       try {
-        const docRef = await addDoc(collection(db, 'products'), {
-          ...values,
-          qtd: Number(values.qtd), // Ensure the quantity is stored as a number
-        });
-
-        console.log('Document written with ID: ', docRef.id);
-        alert('Product added successfully');
-        resetForm();
+        await addDoc(collection(db, "products"), values);
+        setSubmitted(true); // Set the submitted state to true when product is added
       } catch (error) {
-        console.error('Error adding product: ', error);
-        setSubmitError(error instanceof Error ? error.message : String(error));
+        console.error('Error adding product to Firestore: ', error);
+        
       }
-
-      setSubmitting(false);
     },
   });
+  
+  const handleAddAnotherProduct = () => {
+    formik.resetForm();
+    setSubmitted(false);
+  };
 
-  return (
-    <Container maxWidth="lg">
-      <Typography
-        variant="h2"
-        sx={{
-          fontWeight: 'bold',
-          fontSize: '24px',
-          color: 'rgb(108, 108, 108)',
-          letterSpacing: '0.00735em',
-          textAlign: 'left',
-          marginTop: '20px',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-          paddingBottom: '8px',
-          marginBottom: '32px',
-        }}
-      >
-        Adicionar Produto
-      </Typography>
-      <Paper elevation={2} sx={{ padding: '24px', marginBottom: '24px' }}>
-        {submitError && <Alert severity="error">{submitError}</Alert>}
-        <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
-          <TextField
-            label="Marca"
-            id="marca"
-            name="marca"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.marca}
-            error={formik.touched.marca && Boolean(formik.errors.marca)}
-            helperText={formik.touched.marca && formik.errors.marca}
-            margin="normal"
-            sx={{ marginBottom: '10px' }}
-          />
-          <TextField
-            label="Modelo"
-            id="modelo"
-            name="modelo"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.modelo}
-            error={formik.touched.modelo && Boolean(formik.errors.modelo)}
-            helperText={formik.touched.modelo && formik.errors.modelo}
-            margin="normal"
-            sx={{ marginBottom: '10px' }}
-          />
-          <TextField
-            label="Nome"
-            id="nome"
-            name="nome"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.nome}
-            error={formik.touched.nome && Boolean(formik.errors.nome)}
-            helperText={formik.touched.nome && formik.errors.nome}
-            margin="normal"
-            sx={{ marginBottom: '10px' }}
-          />
-          <TextField
-            label="Quantidade"
-            id="qtd"
-            name="qtd"
-            type="number"
-            onChange={formik.handleChange}
-            value={formik.values.qtd}
-            error={formik.touched.qtd && Boolean(formik.errors.qtd)}
-            helperText={formik.touched.qtd && formik.errors.qtd}
-            margin="normal"
-            sx={{ marginBottom: '10px' }}
-          />
-          <Button
-            type="submit"
-            disabled={formik.isSubmitting}
-            sx={{
-              backgroundColor: 'black',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              },
-              marginTop: '20px',
-            }}
-          >
-            Adicionar Produto
+  useEffect(() => {
+    if (formik.values.marca) {
+      dispatch(fetchModelsForBrand(formik.values.marca));
+    }
+  }, [formik.values.marca, dispatch]);
+
+  if (submitted) {
+    // Feedback UI after successful submission
+    return (
+      <Container maxWidth="lg">
+        <Typography variant="h3">Product successfully added!</Typography>
+        <Box>
+          <Button onClick={handleAddAnotherProduct} variant="contained">
+            Add another product
+          </Button>
+          <Button onClick={() => navigate('/')} variant="contained" color="secondary">
+            Go to home
           </Button>
         </Box>
+      </Container>
+    );
+  }
+  
+  return (
+    <Container maxWidth="lg">
+      <Typography variant="h2">Adicionar Produto</Typography>
+      <Paper elevation={2}>
+        <form onSubmit={formik.handleSubmit}>
+          <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
+            <FormLabel component="legend">Add a new product from an existing brand or add a new brand?</FormLabel>
+            <RadioGroup
+              row
+              name="brandOption"
+              value={formik.values.brandOption}
+              onChange={formik.handleChange}
+            >
+              <FormControlLabel value="existing" control={<Radio />} label="Existing Brand" />
+              <FormControlLabel value="new" control={<Radio />} label="New Brand" />
+            </RadioGroup>
+          </FormControl>
+          <Box sx={{ '& .MuiTextField-root': { width: '100%', marginBottom: '20px' } }}>
+            {formik.values.brandOption === 'existing' ? (
+              <Autocomplete
+                options={brands}
+                getOptionLabel={(option) => option}
+                onChange={(event, value) => formik.setFieldValue('marca', value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Brand"
+                    variant="outlined"
+                    error={formik.touched.marca && Boolean(formik.errors.marca)}
+                    helperText={formik.touched.marca && formik.errors.marca}
+                  />
+                )}
+              />
+            ) : (
+              <TextField
+                label="New Brand"
+                name="marca"
+                type="text"
+                onChange={formik.handleChange}
+                value={formik.values.marca}
+                error={formik.touched.marca && Boolean(formik.errors.marca)}
+                helperText={formik.touched.marca && formik.errors.marca}
+              />
+            )}
+            {formik.values.marca && (
+              <React.Fragment>
+                <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
+                  <FormLabel component="legend">Use an existing model or add a new model?</FormLabel>
+                  <RadioGroup
+                    row
+                    name="modelOption"
+                    value={formik.values.modelOption}
+                    onChange={formik.handleChange}
+                  >
+                    <FormControlLabel value="existing" control={<Radio />} label="Existing Model" />
+                    <FormControlLabel value="new" control={<Radio />} label="New Model" />
+                  </RadioGroup>
+                </FormControl>
+                {formik.values.modelOption === 'existing' ? (
+                  <Autocomplete
+                    options={products.filter(product => product.marca === formik.values.marca).map(product => product.modelo)}
+                    getOptionLabel={(option) => option}
+                    onChange={(event, value) => formik.setFieldValue('modelo', value)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Model"
+                        variant="outlined"
+                        error={formik.touched.modelo && Boolean(formik.errors.modelo)}
+                        helperText={formik.touched.modelo && formik.errors.modelo}
+                      />
+                    )}
+                  />
+                ) : (
+                  <TextField
+                    label="New Model"
+                    name="modelo"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.modelo}
+                    error={formik.touched.modelo && Boolean(formik.errors.modelo)}
+                    helperText={formik.touched.modelo && formik.errors.modelo}
+                  />
+                )}
+              </React.Fragment>
+            )}
+            {formik.values.modelo && (
+              <TextField
+                label="Nome"
+                name="nome"
+                type="text"
+                onChange={formik.handleChange}
+                value={formik.values.nome}
+                error={formik.touched.nome && Boolean(formik.errors.nome)}
+                helperText={formik.touched.nome && formik.errors.nome}
+              />
+            )}
+            {formik.values.nome && (
+              <TextField
+                label="Quantity"
+                name="qtd"
+                type="number"
+                onChange={formik.handleChange}
+                value={formik.values.qtd}
+                error={formik.touched.qtd && Boolean(formik.errors.qtd)}
+                helperText={formik.touched.qtd && formik.errors.qtd}
+              />
+            )}
+            <Button type="submit" variant="contained" disabled={!formik.values.nome || !formik.values.qtd}>
+              Submit
+            </Button>
+          </Box>
+        </form>
       </Paper>
-    </Container>
+    </Container >
   );
 };
 

@@ -42,11 +42,11 @@ const HomePage: React.FC = () => {
           </Button>
         </Panel>
         <Panel header="GERAR MENSAGEM" key="2" className="site-collapse-custom-panel">
-          <Button type="primary" block onClick={() => { }}>
-            Lista completa
+          <Button type="primary" block onClick={() => navigate('/generate-message')}>
+            SELECIONAR PRODUTOS
           </Button>
           <Button type="primary" block onClick={() => { }}>
-            Selecionar produtos
+            EXPORTAR ESTOQUE COMPLETO
           </Button>
         </Panel>
       </Collapse>
