@@ -12,9 +12,6 @@ import { useAppDispatch } from '../../ReduxStore/hooks';
 import ProductSelector from './../ProductSelector/ProductSelector';
 
 
-
-
-
 const StockUpdate: React.FC = () => {
 
     const navigate = useNavigate();
@@ -52,20 +49,6 @@ const StockUpdate: React.FC = () => {
             // After updating, reset the adjustment amount and fetch products again to get updated quantities
             setAdjustmentAmount(0);
             dispatch(fetchProducts());
-        }
-    };
-
-
-    const handleQuantityChange = (type: 'increment' | 'decrement') => {
-        if (selectedProduct) {
-            let newQuantity = selectedProduct.qtd;
-            if (type === 'increment' && quantityUpdateType === 'restock') {
-                newQuantity += 1;
-            } else if (type === 'decrement' && quantityUpdateType === 'sale' && newQuantity > 0) {
-                newQuantity -= 1;
-            }
-            setSelectedProduct({ ...selectedProduct, qtd: newQuantity });
-            setAdjustmentAmount(newQuantity - selectedProduct.qtd);
         }
     };
 
