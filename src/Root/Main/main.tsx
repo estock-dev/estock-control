@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { UserProvider } from '../Context/UserProvider'
 import App from '../App/App';
 
+
 const root = document.getElementById('root');
 
 if (root) {
