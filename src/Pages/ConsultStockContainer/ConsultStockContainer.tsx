@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { Outlet } from 'react-router-dom';
-import GenMessage from '../GenMessage/GenMessage';
 import ViewProductsList from '../ViewProducts/ViewProductsList';
 import Title from '../../Root/Title/Title';
+import ListExport from '../ListExport/ListExport';
 
 const { TabPane } = Tabs;
 
 const ConsultStockContainer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('1');
-
   const handleChange = (key: string) => {
     setActiveTab(key);
   };
@@ -28,9 +27,7 @@ const ConsultStockContainer: React.FC = () => {
         </TabPane>
         <TabPane tab="Lista" key="2">
           <Outlet context={{ tab: 'Tab 2' }} />
-          <div>
-            <GenMessage />
-          </div>
+          <ListExport />
         </TabPane>
       </Tabs>
     </div>
