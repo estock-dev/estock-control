@@ -3,6 +3,7 @@ import { Tabs } from 'antd';
 import { Outlet } from 'react-router-dom';
 import GenMessage from '../GenMessage/GenMessage';
 import ViewProductsList from '../ViewProducts/ViewProductsList';
+import Title from '../../Root/Title/Title';
 
 const { TabPane } = Tabs;
 
@@ -15,17 +16,20 @@ const ConsultStockContainer: React.FC = () => {
 
   return (
     <div style={{ padding: '24px', background: '#fff', minHeight: 360 }}>
+      <div>
+        <Title text='Consultar Estoque' />
+      </div>
       <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={handleChange}>
         <TabPane tab="Tabela" key="1">
           <Outlet context={{ tab: 'Tab 1' }} />
           <div>
-            <ViewProductsList/>
+            <ViewProductsList />
           </div>
         </TabPane>
         <TabPane tab="Lista" key="2">
           <Outlet context={{ tab: 'Tab 2' }} />
           <div>
-            <GenMessage/>
+            <GenMessage />
           </div>
         </TabPane>
       </Tabs>

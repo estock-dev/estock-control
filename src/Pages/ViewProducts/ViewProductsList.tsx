@@ -6,7 +6,7 @@ import ImportProductsCSV from '../../Configuration/CsvImport';
 import { Table, Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
-import Title from '../../Root/Title/Title';
+
 import './ViewProductsList.css';
 
 interface Product {
@@ -62,7 +62,7 @@ const ViewProductsList: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  const handlePageSizeChange = (current: number, size: number) => {
+  const handlePageSizeChange = (size: number) => {
     setPageSize(size);
   };
 
@@ -149,9 +149,6 @@ const ViewProductsList: React.FC = () => {
 
   return (
     <div className="view-products-list">
-      <div>
-        <Title text="Consultar Estoque" />
-      </div>
 
       <Table
         key={filterResetKey}

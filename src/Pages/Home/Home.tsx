@@ -24,32 +24,20 @@ const HomePage: React.FC = () => {
       style={{ display: "flex", flexDirection: "column", marginTop: '20px', alignItems: "center", gap: '10px', width: '100%' }}
       className="home-page"
     >
-      <Collapse
-        bordered={false}
-        defaultActiveKey={['1']}
-        expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-        className="site-collapse-custom-collapse"
-      >
-        <Panel header="ESTOQUE" key="1" style={{ color: 'white'}} className="site-collapse-custom-panel">
+      
+        
           <Button type="primary" block onClick={() => navigate('/stock-update')}>
-            ATUALIZAR
+            Atualizar Estoque
           </Button>
           <Button type="primary" block onClick={() => navigate('/view-products')}>
-            CONSULTAR
+            Consultar Estoque
           </Button>
-          <Button type="primary" block onClick={() => navigate('/add-product')}>
-            ADICIONAR NOVO PRODUTO
-          </Button>
-        </Panel>
-        <Panel header="GERAR MENSAGEM" key="2" className="site-collapse-custom-panel">
           <Button type="primary" block onClick={() => navigate('/generate-message')}>
-            SELECIONAR PRODUTOS
+            Exportar Lista Rápida
           </Button>
-          <Button type="primary" block onClick={() => { }}>
-            EXPORTAR ESTOQUE COMPLETO
-          </Button>
-        </Panel>
-      </Collapse>
+          
+
+      
 
       <Outlet />
     </motion.div>

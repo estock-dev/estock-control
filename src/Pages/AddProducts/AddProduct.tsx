@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Box, Typography, Paper, Alert, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Autocomplete } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, Paper, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Autocomplete } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
 import { fetchProducts, fetchModelsForBrand } from '../../ReduxStore/Slices/productsSlice';
 import { useFormik } from 'formik';
@@ -77,7 +77,7 @@ const AddProduct = () => {
   
   return (
     <Container maxWidth="lg">
-      <Typography variant="h2">Adicionar Produto</Typography>
+      
       <Paper elevation={2}>
         <form onSubmit={formik.handleSubmit}>
           <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
@@ -97,7 +97,7 @@ const AddProduct = () => {
               <Autocomplete
                 options={brands}
                 getOptionLabel={(option) => option}
-                onChange={(event, value) => formik.setFieldValue('marca', value)}
+                onChange={(value) => formik.setFieldValue('marca', value)}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -137,7 +137,7 @@ const AddProduct = () => {
                   <Autocomplete
                     options={products.filter(product => product.marca === formik.values.marca).map(product => product.modelo)}
                     getOptionLabel={(option) => option}
-                    onChange={(event, value) => formik.setFieldValue('modelo', value)}
+                    onChange={(value) => formik.setFieldValue('modelo', value)}
                     renderInput={(params) => (
                       <TextField
                         {...params}

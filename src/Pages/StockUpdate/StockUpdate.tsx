@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {
     Container, Typography, Button, Box, Paper,
     Radio, RadioGroup, FormControlLabel, FormControl, FormLabel,
@@ -11,8 +10,8 @@ import { fetchProducts, ProductItem, updateProductQuantity } from '../../ReduxSt
 import { useAppDispatch } from '../../ReduxStore/hooks';
 import ProductSelector from './../ProductSelector/ProductSelector';
 
+
 const StockUpdate = () => {
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
     const [quantityUpdateType, setQuantityUpdateType] = useState<'sale' | 'restock'>('restock');
@@ -62,19 +61,7 @@ const StockUpdate = () => {
 
     return (
         <Container maxWidth="lg">
-            <Typography variant="h2" sx={{
-                fontWeight: 'bold',
-                fontSize: '24px',
-                color: 'rgb(108, 108, 108)',
-                letterSpacing: '0.00735em',
-                textAlign: 'left',
-                marginTop: '20px',
-                borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-                paddingBottom: '8px',
-                marginBottom: '32px',
-            }}>
-                Atualizar estoque
-            </Typography>
+   
 
             <Paper elevation={2} sx={{ padding: '24px', marginBottom: '24px' }}>
                 <ProductSelector 
