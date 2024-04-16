@@ -19,8 +19,12 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionComplete }
   }, [dispatch]);
 
   const brands = Array.from(new Set(products.map(product => product.marca)));
-  const models = selectedBrand ? products.filter(product => product.marca === selectedBrand).map(product => product.modelo) : [];
+  
   const names = selectedModel ? products.filter(product => product.modelo === selectedModel && product.marca === selectedBrand).map(product => product.nome) : [];
+
+  const models = selectedBrand
+    ? Array.from(new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo)))
+    : [];
 
   return (
     <div>
@@ -36,19 +40,20 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionComplete }
       />
       {selectedBrand && (
         <Autocomplete
-          options={models}
-          style={{ marginBottom: '20px', backgroundColor: 'lightblue' }}  // Visual feedback
-          renderInput={(params) => <TextField {...params} label="Select Model" variant="outlined" />}
-          onChange={(event, newValue: string | null) => {
-            setSelectedModel(newValue);
-            setSelectedName(null);  // Clear subsequent selections
-          }}
-        />
-      )}
+        options={models}
+        style={{ marginBottom: '20px' }}
+        renderInput={(params) => <TextField {...params} label="Select Model" variant="outlined" />}
+        onChange={(event, newValue: string | null) => {
+          setSelectedModel(newValue);
+          const product = products.find(p => p.modelo === newValue && p.marca === selectedBrand) || null;
+          onSelectionComplete(product); // Call selection complete with either the product or null
+        }}
+      />
+    )}
       {selectedModel && (
         <Autocomplete
           options={names}
-          style={{ marginBottom: '20px', backgroundColor: 'lightgreen' }}  // Visual feedback
+          style={{ marginBottom: '20px' }}  // Visual feedback
           renderInput={(params) => <TextField {...params} label="Select Name" variant="outlined" />}
           onChange={(event, newValue: string | null) => {
             setSelectedName(newValue);

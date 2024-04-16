@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Container, Typography, Button, Box, Paper,
     Radio, RadioGroup, FormControlLabel, FormControl, FormLabel,
-    Snackbar, Dialog, DialogActions, DialogTitle, IconButton
+    Snackbar, IconButton
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
@@ -11,70 +11,54 @@ import { fetchProducts, ProductItem, updateProductQuantity } from '../../ReduxSt
 import { useAppDispatch } from '../../ReduxStore/hooks';
 import ProductSelector from './../ProductSelector/ProductSelector';
 
-
-const StockUpdate: React.FC = () => {
-
+const StockUpdate = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
     const [quantityUpdateType, setQuantityUpdateType] = useState<'sale' | 'restock'>('restock');
-    const [adjustmentAmount, setAdjustmentAmount] = useState<number>(0);
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-    const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState('');
     const [quantityUpdate, setQuantityUpdate] = useState<number>(0);
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    const [resetKey, setResetKey] = useState<number>(0);
 
-    
     useEffect(() => {
         dispatch(fetchProducts());
     }, [dispatch]);
 
-    
-    
     const handleUpdateStock = async () => {
         if (!selectedProduct) return;
-        const quantityAdjustment = quantityUpdateType === 'sale' ? -quantityUpdate : quantityUpdate;
-        const newQuantity = selectedProduct.qtd + quantityAdjustment;
-        
+
+        const quantity = Number(quantityUpdate);
+        const existingQuantity = Number(selectedProduct.qtd);
+        const quantityAdjustment = quantityUpdateType === 'sale' ? -quantity : quantity;
+
+        const newQuantity = existingQuantity + quantityAdjustment;
+
         if (newQuantity < 0) {
             alert('Não é possível ter quantidade de estoque negativa.');
             return;
         }
+
         const isConfirmed = window.confirm(`Tem certeza que quer ${quantityUpdateType === 'sale' ? 'vender' : 're-estocar'} ${Math.abs(quantityAdjustment)} produtos?`);
         if (isConfirmed) {
             await dispatch(updateProductQuantity({ id: selectedProduct.id, adjustment: quantityAdjustment }));
-            setSuccessMessage(`Estoque ${quantityUpdateType === 'sale' ? 'diminuído' : 'aumentado'} com sucesso.`);
             setOpenSnackbar(true);
-            setOpenDialog(true);
-            // After updating, reset the adjustment amount and fetch products again to get updated quantities
-            setAdjustmentAmount(0);
-            dispatch(fetchProducts());
+            setSelectedProduct(null); // Reset the selected product to refresh the form
+            setQuantityUpdate(0); // Reset the quantity update field
+            setResetKey(prevKey => prevKey + 1); // Increment the key to reset ProductSelector
         }
     };
 
     const handleIncrement = () => {
-            let quantityIncrease = quantityUpdate
-            setQuantityUpdate(quantityIncrease += 1);
-        
+        setQuantityUpdate(prevQuantity => prevQuantity + 1);
     };
 
     const handleDecrement = () => {
-        if ((selectedProduct?.qtd ?? 0) + adjustmentAmount > 0) {
-            let quantityDecrease = quantityUpdate
-            setQuantityUpdate(quantityDecrease -= 1);
-        }
+        setQuantityUpdate(prevQuantity => Math.max(prevQuantity - 1, 0));
     };
 
-    const handleGoToViewProducts = () => {
-        navigate('/view-products');
-        setOpenDialog(false);
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
     };
-
-    const handleGoToHome = () => {
-        navigate('/home');
-        setOpenDialog(false);
-    };
-
 
     return (
         <Container maxWidth="lg">
@@ -93,11 +77,12 @@ const StockUpdate: React.FC = () => {
             </Typography>
 
             <Paper elevation={2} sx={{ padding: '24px', marginBottom: '24px' }}>
-                <ProductSelector onSelectionComplete={(product) => {
-                    setSelectedProduct(product);
-                    // Set the adjustmentAmount to reflect the quantity of the selected product
-                    setAdjustmentAmount(product?.qtd || 0); // Set to product quantity or 0 if product is null
-                }} />
+                <ProductSelector 
+                    key={resetKey} // This key change will cause ProductSelector to re-render
+                    onSelectionComplete={(product) => {
+                        setSelectedProduct(product);
+                    }}
+                />
                 {selectedProduct && (
                     <>
                         <FormControl component="fieldset" style={{ marginBottom: '20px' }}>
@@ -118,15 +103,15 @@ const StockUpdate: React.FC = () => {
                                 <RemoveCircleOutlineIcon fontSize="large" />
                             </IconButton>
                             <Typography variant="h4" sx={{ marginX: '20px', minWidth: '50px', textAlign: 'center' }}>
-                                {quantityUpdate} {/* Display the adjustment amount */}
+                                {quantityUpdate}
                             </Typography>
                             <IconButton onClick={handleIncrement} color="secondary" >
                                 <AddCircleOutlineIcon fontSize="large" />
                             </IconButton>
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: "right", alignItems: 'center', marginBottom: '20px' }}>
-                        <Typography variant="h4" sx={{ marginX: '20px', minWidth: '50px', textAlign: 'center' }}>
-                                current quantity available: {selectedProduct.qtd} {/* Display the adjustment amount */}
+                            <Typography variant="h4" sx={{ marginX: '20px', minWidth: '50px', textAlign: 'center' }}>
+                                current quantity available: {selectedProduct.qtd}
                             </Typography>
                         </Box>
                         <Button
@@ -137,7 +122,7 @@ const StockUpdate: React.FC = () => {
                                 '&:hover': {
                                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                                 },
-                                display: 'block', // to make the button take full width
+                                display: 'block',
                                 marginTop: '10px'
                             }}
                             onClick={handleUpdateStock}
@@ -150,23 +135,10 @@ const StockUpdate: React.FC = () => {
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
-                onClose={() => setOpenSnackbar(false)}
-                message={successMessage}
+                onClose={handleCloseSnackbar}
+                message="Product quantity updated"
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             />
-            <Dialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-            >
-                <DialogTitle>Estoque atualizado!</DialogTitle>
-                <DialogActions>
-                    <Button onClick={handleGoToViewProducts} color="primary">
-                        Editar outro produto
-                    </Button>
-                    <Button onClick={handleGoToHome} color="primary" autoFocus>
-                        Voltar para o início
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Container>
     );
 };
