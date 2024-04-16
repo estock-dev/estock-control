@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { Outlet } from 'react-router-dom';
 import GenMessage from '../GenMessage/GenMessage';
+import ViewProductsList from '../ViewProducts/ViewProductsList';
 
 const { TabPane } = Tabs;
 
@@ -15,20 +16,16 @@ const ConsultStockContainer: React.FC = () => {
   return (
     <div style={{ padding: '24px', background: '#fff', minHeight: 360 }}>
       <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={handleChange}>
-        <TabPane tab="Tab 3" key="1">
+        <TabPane tab="Tabela" key="1">
           <Outlet context={{ tab: 'Tab 1' }} />
-          
           <div>
-            <h1>Content of Tab 3</h1>
-            <GenMessage/>
+            <ViewProductsList/>
           </div>
         </TabPane>
-        <TabPane tab="Tab 4" key="2">
+        <TabPane tab="Lista" key="2">
           <Outlet context={{ tab: 'Tab 2' }} />
-          
           <div>
-            <h1>Content of Tab 4</h1>
-            <p>This is the content section for Tab 2.</p>
+            <GenMessage/>
           </div>
         </TabPane>
       </Tabs>

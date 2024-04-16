@@ -2,6 +2,21 @@
     padding: 24px;
 }
 
+.view-products-list .title {
+    margin-bottom: 32px;
+}
+
+.view-products-list .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    margin-top: 16px;
+}
+
+.view-products-list .buttonGroup > Button {
+    margin-right: 8px;
+}
+
 .view-products-list .customTable {
     margin: 24px auto;
     max-width: 1200px;
@@ -30,6 +45,12 @@
     line-height: normal;
 }
 
+.view-products-list .customTable .ant-table-thead > tr > th:last-child,
+.view-products-list .customTable .ant-table-tbody > tr > td:last-child {
+    width: 90px;
+    text-align: center;
+}
+
 @media screen and (max-width: 600px) {
     .view-products-list .customTable {
         min-width: 400px;
@@ -37,6 +58,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .view-products-list .customTable .ant-table-thead > tr > th:last-child,
+    .view-products-list .customTable .ant-table-tbody > tr > td:last-child {
+        width: 90px;
+        text-align: center;
     }
 
     .view-products-list .customTable .ant-table-pagination {

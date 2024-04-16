@@ -4,7 +4,6 @@ import Login from "../Pages/Login/Login";
 import HomePage from "../Pages/Home/Home";
 import EditProducts from "../Pages/EditProduct/EditProduct";
 import AddProduct from "../Pages/AddProducts/AddProduct";
-import ViewProductsList from "../Pages/ViewProducts/ViewProductsList";
 import RequireAuthGuard from "./RequireAuthGuard";
 import Layout from "../Root/Layout/Layout";
 import UpdateStockContainer from "../Pages/UpdateStockContainer/UpdateStockContainer";
@@ -19,7 +18,7 @@ const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: 'login', element: <Login /> },
       { path: 'home', element: <RequireAuthGuard><HomePage /></RequireAuthGuard> },
-      { path: 'view-products', element: <RequireAuthGuard><ViewProductsList /></RequireAuthGuard> },
+      { path: 'view-products', element: <RequireAuthGuard><ConsultStockContainer /></RequireAuthGuard> },
       { path: 'edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'add-product', element: <RequireAuthGuard><AddProduct /></RequireAuthGuard> },

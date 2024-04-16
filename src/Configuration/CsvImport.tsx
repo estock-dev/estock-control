@@ -3,7 +3,6 @@ import Papa from 'papaparse';
 import { collection, doc } from 'firebase/firestore';
 import { writeBatch } from 'firebase/firestore';
 import { db } from '../Configuration/firebase';
-// import { Button } from '@mui/material';
 
 const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -11,7 +10,8 @@ const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
         if (file) {
             Papa.parse(file, {
                 complete: (result) => {
-                    uploadProducts(result.data as { marca: string; modelo: string; nome: string; qtd: number; }[]);
+                    const products = result.data as { marca: string; modelo: string; nome: string; qtd: string; }[];
+                    uploadProducts(products);
                 },
                 header: true,
                 skipEmptyLines: true,
@@ -19,22 +19,29 @@ const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
         }
     };
 
-    const uploadProducts = async (products: { marca: string; modelo: string; nome: string; qtd: number; }[]) => {
+    const uploadProducts = async (products: { marca: string; modelo: string; nome: string; qtd: string; }[]) => {
         const collectionRef = collection(db, 'products');
         let batch = writeBatch(db);
         const BATCH_SIZE = 500;
 
         for (let i = 0; i < products.length; i++) {
-            const docRef = doc(collectionRef);
-            batch.set(docRef, products[i]);
+            const product = {
+                ...products[i],
+                qtd: parseInt(products[i].qtd, 10)
+            };
+            
+            if (!isNaN(product.qtd)) {
+                const docRef = doc(collectionRef);
+                batch.set(docRef, product);
+            } else {
+                console.error(`Invalid quantity for product at index ${i}:`, products[i]);
+            }
 
-
-            if (i % BATCH_SIZE === 0) {
+            if ((i + 1) % BATCH_SIZE === 0) {
                 await batch.commit();
                 batch = writeBatch(db);
             }
         }
-
 
         if (products.length % BATCH_SIZE !== 0) {
             await batch.commit();
@@ -49,10 +56,9 @@ const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
                 type="file"
                 accept=".csv"
                 onChange={handleFileChange}
-                style={{ display: 'none' }} // Hide the input element
-                ref={ref} // Attach the forwarded ref
+                style={{ display: 'none' }}
+                ref={ref}
             />
-            {/* The visible button is removed since the file input will be triggered elsewhere */}
         </div>
     );
 });

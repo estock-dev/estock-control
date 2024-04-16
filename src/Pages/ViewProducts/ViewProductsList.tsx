@@ -3,9 +3,10 @@ import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
 import { useNavigate } from 'react-router-dom';
 import ImportProductsCSV from '../../Configuration/CsvImport';
-import { Table, Button, Typography, Space, Popconfirm } from 'antd';
+import { Table, Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
+import Title from '../../Root/Title/Title';
 import './ViewProductsList.css';
 
 interface Product {
@@ -18,6 +19,7 @@ interface Product {
 
 const ViewProductsList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filterResetKey, setFilterResetKey] = useState<number>(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
   const navigate = useNavigate();
@@ -69,13 +71,25 @@ const ViewProductsList: React.FC = () => {
     onChange: onSelectChange,
   };
 
+  const refreshTableData = async () => {
+    const querySnapshot = await getDocs(collection(db, 'products'));
+    setProducts(querySnapshot.docs.map((docSnapshot) => ({
+      key: docSnapshot.id,
+      ...docSnapshot.data(),
+    }) as Product));
+  };
+
+  const handleClearFilters = () => {
+    setFilterResetKey(prevKey => prevKey + 1);
+  };
+
   const columns: ColumnsType<Product> = [
     {
       title: 'MARCA',
       dataIndex: 'marca',
       key: 'marca',
       sorter: (a, b) => a.marca.localeCompare(b.marca),
-      filterMultiple: false,
+      filterMultiple: true,
       onFilter: (value, record) => record.marca.includes(value as string),
       filters: [...new Set(products.map((item) => item.marca))].map((marca) => ({
         text: marca,
@@ -87,7 +101,7 @@ const ViewProductsList: React.FC = () => {
       dataIndex: 'modelo',
       key: 'modelo',
       sorter: (a, b) => a.modelo.localeCompare(b.modelo),
-      filterMultiple: false,
+      filterMultiple: true,
       onFilter: (value, record) => record.modelo.includes(value as string),
       filters: [...new Set(products.map((item) => item.modelo))].map((modelo) => ({
         text: modelo,
@@ -99,7 +113,7 @@ const ViewProductsList: React.FC = () => {
       dataIndex: 'nome',
       key: 'nome',
       sorter: (a, b) => a.nome.localeCompare(b.nome),
-      filterMultiple: false,
+      filterMultiple: true,
       onFilter: (value, record) => record.nome.includes(value as string),
       filters: [...new Set(products.map((item) => item.nome))].map((nome) => ({
         text: nome,
@@ -121,10 +135,10 @@ const ViewProductsList: React.FC = () => {
         <Space size="middle">
           <Button onClick={() => handleEdit(record.key)} icon={<EditOutlined />} />
           <Popconfirm
-            title="Are you sure to delete this product?"
+            title="Tem certeza que deseja deletar esse produto?"
             onConfirm={() => handleDelete(record.key)}
-            okText="Yes"
-            cancelText="No"
+            okText="Sim"
+            cancelText="Não"
           >
             <Button icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -135,11 +149,12 @@ const ViewProductsList: React.FC = () => {
 
   return (
     <div className="view-products-list">
-      <Typography.Title level={2} className="title">
-        Consultar Estoque
-      </Typography.Title>
+      <div>
+        <Title text="Consultar Estoque" />
+      </div>
 
       <Table
+        key={filterResetKey}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={products}
@@ -151,23 +166,25 @@ const ViewProductsList: React.FC = () => {
         className="customTable"
       />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline' }}>
-        <Button
-          onClick={handleMultipleDelete}
-          danger
-          disabled={selectedRowKeys.length === 0}
-          style={{ marginRight: 8 }}
-        >
-          Delete selected
+      <div className="buttonGroup">
+        <Button onClick={handleMultipleDelete} danger disabled={selectedRowKeys.length === 0}>
+          Deletar Seleção
         </Button>
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-        >
-          Import CSV
-        </Button>
-      </div>
 
-      <ImportProductsCSV ref={fileInputRef} />
+        <Button onClick={refreshTableData}>
+          Recarregar Tabela
+        </Button>
+
+        <Button onClick={handleClearFilters}>
+          Limpar Filtros
+        </Button>
+
+        <Button onClick={() => fileInputRef.current?.click()}>
+          Importar CSV
+        </Button>
+
+        <ImportProductsCSV ref={fileInputRef} />
+      </div>
     </div>
   );
 };
