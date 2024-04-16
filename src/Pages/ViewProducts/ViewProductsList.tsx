@@ -47,7 +47,7 @@ const ViewProductsList: React.FC = () => {
   };
 
   const handleMultipleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete these products?");
+    const confirmDelete = window.confirm("Tem certeza que deseja deletar estes produtos?");
     if (confirmDelete) {
       const deletePromises = selectedRowKeys.map((key) => {
         return deleteDoc(doc(db, 'products', key.toString()));

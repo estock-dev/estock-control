@@ -97,15 +97,6 @@ const EditProduct: React.FC = () => {
           margin="normal"
           type="string"
         />
-        {/* <TextField
-          fullWidth
-          label="Código do Produto"
-          name="code"
-          value={product.code}
-          onChange={handleChange}
-          margin="normal"
-          disabled // You might want to make this field read-only
-        /> */}
         <TextField
           fullWidth
           label="Quantidade"

@@ -19,12 +19,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const handleSetUser = (userData: User | null) => {
     if (userData) {
-        // This will update the Redux state and, optionally, your Firestore database
         dispatch(updateUser(userData));
     } else {
-        // Handle the case when userData is null, if necessary
     }
-    setUser(userData); // Update local state
+    setUser(userData); 
 };
 
   return (

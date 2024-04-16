@@ -6,20 +6,20 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = yup.object({
-  marca: yup.string().required('Brand is required'),
-  modelo: yup.string().required('Model is required'),
-  nome: yup.string().required('Name is required'),
-  qtd: yup.number().positive('Quantity must be positive').required('Quantity is required'),
+  marca: yup.string().required('Marca é obrigatória'),
+  modelo: yup.string().required('Modelo é obrigatório'),
+  nome: yup.string().required('Nome é obrigatório'),
+  qtd: yup.number().positive('Quantidade não pode ser negativa').required('Quantidade é obrigatória'),
 });
 
 const AddProduct = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
   const brands = Array.from(new Set(products.map(product => product.marca)));
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -36,17 +36,17 @@ const AddProduct = () => {
       qtd: '',
     },
     validationSchema: validationSchema,
-     onSubmit: async ({ brandOption, modelOption, ...values }) => {
+    onSubmit: async ({ brandOption, modelOption, ...values }) => {
       try {
         await addDoc(collection(db, "products"), values);
-        setSubmitted(true); // Set the submitted state to true when product is added
+        setSubmitted(true);
       } catch (error) {
         console.error('Error adding product to Firestore: ', error);
-        
+
       }
     },
   });
-  
+
   const handleAddAnotherProduct = () => {
     formik.resetForm();
     setSubmitted(false);
@@ -59,37 +59,35 @@ const AddProduct = () => {
   }, [formik.values.marca, dispatch]);
 
   if (submitted) {
-    // Feedback UI after successful submission
     return (
       <Container maxWidth="lg">
-        <Typography variant="h3">Product successfully added!</Typography>
+        <Typography variant="h3">Produto adicionado com sucesso!</Typography>
         <Box>
           <Button onClick={handleAddAnotherProduct} variant="contained">
-            Add another product
+            Adicionar outro produto
           </Button>
           <Button onClick={() => navigate('/')} variant="contained" color="secondary">
-            Go to home
+            Ir para o início
           </Button>
         </Box>
       </Container>
     );
   }
-  
+
   return (
     <Container maxWidth="lg">
-      
       <Paper elevation={2}>
         <form onSubmit={formik.handleSubmit}>
           <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
-            <FormLabel component="legend">Add a new product from an existing brand or add a new brand?</FormLabel>
+            <FormLabel component="legend">Adicionar um produto de uma marca existente ou adicionar uma nova marca?</FormLabel>
             <RadioGroup
               row
               name="brandOption"
               value={formik.values.brandOption}
               onChange={formik.handleChange}
             >
-              <FormControlLabel value="existing" control={<Radio />} label="Existing Brand" />
-              <FormControlLabel value="new" control={<Radio />} label="New Brand" />
+              <FormControlLabel value="existing" control={<Radio />} label="Marca Existente" />
+              <FormControlLabel value="new" control={<Radio />} label="Nova Marca" />
             </RadioGroup>
           </FormControl>
           <Box sx={{ '& .MuiTextField-root': { width: '100%', marginBottom: '20px' } }}>
@@ -101,7 +99,7 @@ const AddProduct = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Select Brand"
+                    label="Selecionar Marca"
                     variant="outlined"
                     error={formik.touched.marca && Boolean(formik.errors.marca)}
                     helperText={formik.touched.marca && formik.errors.marca}
@@ -110,7 +108,7 @@ const AddProduct = () => {
               />
             ) : (
               <TextField
-                label="New Brand"
+                label="Nova Marca"
                 name="marca"
                 type="text"
                 onChange={formik.handleChange}
@@ -122,15 +120,15 @@ const AddProduct = () => {
             {formik.values.marca && (
               <React.Fragment>
                 <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
-                  <FormLabel component="legend">Use an existing model or add a new model?</FormLabel>
+                  <FormLabel component="legend">Usar um modelo existente ou adicionar um novo?</FormLabel>
                   <RadioGroup
                     row
                     name="modelOption"
                     value={formik.values.modelOption}
                     onChange={formik.handleChange}
                   >
-                    <FormControlLabel value="existing" control={<Radio />} label="Existing Model" />
-                    <FormControlLabel value="new" control={<Radio />} label="New Model" />
+                    <FormControlLabel value="existing" control={<Radio />} label="Modelo Existente" />
+                    <FormControlLabel value="new" control={<Radio />} label="Novo Modelo" />
                   </RadioGroup>
                 </FormControl>
                 {formik.values.modelOption === 'existing' ? (
@@ -141,7 +139,7 @@ const AddProduct = () => {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Select Model"
+                        label="Selecionar Modelo"
                         variant="outlined"
                         error={formik.touched.modelo && Boolean(formik.errors.modelo)}
                         helperText={formik.touched.modelo && formik.errors.modelo}
@@ -150,7 +148,7 @@ const AddProduct = () => {
                   />
                 ) : (
                   <TextField
-                    label="New Model"
+                    label="Novo Modelo"
                     name="modelo"
                     type="text"
                     onChange={formik.handleChange}
@@ -174,7 +172,7 @@ const AddProduct = () => {
             )}
             {formik.values.nome && (
               <TextField
-                label="Quantity"
+                label="Quantidade"
                 name="qtd"
                 type="number"
                 onChange={formik.handleChange}
@@ -184,7 +182,7 @@ const AddProduct = () => {
               />
             )}
             <Button type="submit" variant="contained" disabled={!formik.values.nome || !formik.values.qtd}>
-              Submit
+              Adicionar Produto
             </Button>
           </Box>
         </form>

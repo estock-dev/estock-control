@@ -46,7 +46,7 @@ const Login: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 300, margin: 'auto' }}>
       {loginError && <Alert severity="error">{loginError}</Alert>}
       <TextField
-        label="Email"
+        label="E-mail"
         variant="outlined"
         fullWidth
         margin="normal"
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
         helperText={errors.email?.message}
       />
       <TextField
-        label="Password"
+        label="Senha"
         variant="outlined"
         type="password"
         fullWidth

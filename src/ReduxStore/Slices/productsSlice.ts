@@ -10,7 +10,6 @@ export type ProductItem = {
   modelo: string;
   nome: string;
   qtd: number;
-  // Add other properties as needed
 };
 
 export interface CartItem {
@@ -23,15 +22,14 @@ export interface CartItem {
 
 interface Model {
   name: string;
-  // ...other properties
 }
 
 interface ProductsState {
   products: ProductItem[];
   currentProduct: ProductItem | null;
-  includeQuantity: boolean; // Newly added state
-  selectedKey: string; // Newly added state
-  formattedMessage: string; // Newly added state
+  includeQuantity: boolean; 
+  selectedKey: string; 
+  formattedMessage: string; 
   loading: boolean;
   error: string | null;
   selectedProducts: ProductItem[];
@@ -65,29 +63,26 @@ export const updateProductQuantity = createAsyncThunk<
     const product = state.products.products.find((p) => p.id === id);
 
     if (!product) {
-      return rejectWithValue('Product not found');
+      return rejectWithValue('Produto não encontrado!');
     }
 
     const newQuantity = product.qtd + adjustment;
     if (newQuantity < 0) {
-      return rejectWithValue('Cannot reduce quantity below 0');
+      return rejectWithValue('Não pode reduzir a quantidade abaixo de 0.');
     }
 
-    // Optimistically update the state first
     dispatch(productQuantityUpdated({ id, qtd: newQuantity }));
 
     try {
-      // Update Firestore document
       const docRef = doc(db, 'products', id);
       await updateDoc(docRef, { qtd: newQuantity });
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error updating product quantity:', error);
-        // Revert state update if Firestore update fails
+        console.error('Erro ao atualizar a quantidade do produto:', error);
         dispatch(productQuantityUpdated({ id, qtd: product.qtd }));
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('An unknown error occurred while updating product quantity.');
+      return rejectWithValue('Um erro desconhecido ocorreu ao atualizar a quantidade do produto:.');
     }
   }
 );
@@ -98,15 +93,13 @@ export const fetchModelsForBrand = createAsyncThunk<string[], string, { rejectVa
     try {
       const modelsQuery = query(collection(db, 'models'), where('brand', '==', brand));
       const querySnapshot = await getDocs(modelsQuery);
-      // TypeScript now understands the shape of your data
       const models = querySnapshot.docs.map((doc) => (doc.data() as Model).name);
       return models;
     } catch (error) {
-      // If error is an instance of FirestoreError, you can get more detailed error information
       if (error instanceof FirestoreError) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('An unknown error occurred while fetching models.');
+      return rejectWithValue('Um erro desconhecido ocorreu ao buscar modelos');
     }
   }
 );
@@ -125,12 +118,12 @@ export const fetchProducts = createAsyncThunk<ProductItem[], void, { rejectValue
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('An unknown error occurred while fetching products.');
+      return rejectWithValue('Um erro desconhecido ocorreu ao buscar os produtos.');
     }
   }
 );
 
-// Async thunk for fetching a single product by its ID
+
 export const fetchProductById = createAsyncThunk<ProductItem, string, { rejectValue: string }>(
   'products/fetchProductById',
   async (productId, { rejectWithValue }) => {
@@ -138,48 +131,42 @@ export const fetchProductById = createAsyncThunk<ProductItem, string, { rejectVa
       const docRef = doc(db, 'products', productId);
       const docSnap = await getDoc(docRef);
 
-      // Ensure the data structure matches what you expect
+
       if (docSnap.exists() && docSnap.data()) {
         const data = docSnap.data();
-        // Potentially, add additional validation for the data fields if necessary
         if (typeof data.marca === 'string' && typeof data.modelo === 'string' && typeof data.nome === 'string' && typeof data.qtd === 'number') {
           return { id: docSnap.id, ...data as Omit<ProductItem, 'id'> };
         } else {
-          // The document data did not match the expected shape
-          return rejectWithValue('Product data is malformed');
+          return rejectWithValue('Os dados do produto estão malformados');
         }
       } else {
-        // Document does not exist
-        return rejectWithValue('Product not found');
+        return rejectWithValue('Produto não encontrado');
       }
     } catch (error) {
-      // General error handling
       if (error instanceof Error) {
-        console.error('Error fetching product:', error);
+        console.error('Erro ao buscar produto:', error);
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('An unknown error occurred while fetching the product.');
+      return rejectWithValue('Um erro desconhecido ocorreu ao buscar o produto.');
     }
   }
 );
 
 export const selectAllBrands = (state: RootState) => {
   const brands = state.products.products.map((product) => product.marca);
-  return [...new Set(brands)]; // Return unique brands
+  return [...new Set(brands)]; 
 };
 
 export const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
-    // Reducer to clear the current product
     clearCurrentProduct(state) {
       state.currentProduct = null;
     },
     productQuantityUpdated(state, action: PayloadAction<{ id: string; qtd: number }>) {
       const index = state.products.findIndex((product) => product.id === action.payload.id);
       if (index !== -1) {
-        // Use Immer's ability to handle state updates immutably
         state.products[index].qtd = action.payload.qtd;
       }
     },
@@ -216,7 +203,7 @@ export const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch products.';
+        state.error = action.payload || 'Falha ao buscar produtos.';
       })
       .addCase(fetchModelsForBrand.fulfilled, (state, action) => {
         state.models = action.payload;
@@ -231,7 +218,7 @@ export const productsSlice = createSlice({
       })
       .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Failed to fetch product.';
+        state.error = action.payload || 'Falha ao buscar produtos.';
       });
   },
 });

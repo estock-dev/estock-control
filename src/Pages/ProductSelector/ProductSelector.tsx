@@ -23,7 +23,6 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange, st
     onSelectionChange(selectedBrand, selectedModel, selectedName);
   }, [selectedBrand, selectedModel, selectedName, onSelectionChange]);
 
-  // Define the arrays for brands, models, and names
   const brands = Array.from(new Set(products.map(product => product.marca)));
   const models = selectedBrand 
     ? Array.from(new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo)))
