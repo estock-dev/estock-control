@@ -1,67 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from './../../ReduxStore/hooks';
-import { fetchProducts, ProductItem } from './../../ReduxStore/Slices/productsSlice'
+import { fetchProducts } from './../../ReduxStore/Slices/productsSlice';
 
 export interface ProductSelectorProps {
-  onSelectionComplete: (product: ProductItem | null) => void;
+  onSelectionChange: (brand: string | null, model: string | null, name: string | null) => void;
+  stepByStep?: boolean;
 }
 
-const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionComplete }) => {
+const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange, stepByStep = false }) => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [selectedName, setSelectedName] = useState<string | null>(null);  // Rename for clarity
+  const [selectedName, setSelectedName] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const brands = Array.from(new Set(products.map(product => product.marca)));
-  
-  const names = selectedModel ? products.filter(product => product.modelo === selectedModel && product.marca === selectedBrand).map(product => product.nome) : [];
+  useEffect(() => {
+    onSelectionChange(selectedBrand, selectedModel, selectedName);
+  }, [selectedBrand, selectedModel, selectedName, onSelectionChange]);
 
-  const models = selectedBrand
+  // Define the arrays for brands, models, and names
+  const brands = Array.from(new Set(products.map(product => product.marca)));
+  const models = selectedBrand 
     ? Array.from(new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo)))
-    : [];
+    : Array.from(new Set(products.map(product => product.modelo)));
+  const names = selectedModel && selectedBrand 
+    ? products.filter(product => product.modelo === selectedModel && product.marca === selectedBrand).map(product => product.nome)
+    : Array.from(new Set(products.map(product => product.nome)));
+
+  const handleBrandChange = (_event: unknown, newValue: string | null) => {
+    setSelectedBrand(newValue);
+    setSelectedModel(null);
+    setSelectedName(null);
+  };
+
+  const handleModelChange = (_event: unknown, newValue: string | null) => {
+    setSelectedModel(newValue);
+    setSelectedName(null);
+  };
+
+  const handleNameChange = (_event: unknown, newValue: string | null) => {
+    setSelectedName(newValue);
+  };
 
   return (
     <div>
       <Autocomplete
         options={brands}
+        value={selectedBrand}
+        renderInput={(params) => <TextField {...params} label="Marca" variant="outlined" />}
+        onChange={handleBrandChange}
         style={{ marginBottom: '20px' }}
-        renderInput={(params) => <TextField {...params} label="Select Brand" variant="outlined" />}
-        onChange={(event, newValue: string | null) => {
-          setSelectedBrand(newValue);
-          setSelectedModel(null);
-          setSelectedName(null);  // Clear subsequent selections
-        }}
       />
-      {selectedBrand && (
-        <Autocomplete
+      <Autocomplete
         options={models}
+        value={selectedModel}
+        renderInput={(params) => <TextField {...params} label="Modelo" variant="outlined" />}
+        onChange={handleModelChange}
         style={{ marginBottom: '20px' }}
-        renderInput={(params) => <TextField {...params} label="Select Model" variant="outlined" />}
-        onChange={(event, newValue: string | null) => {
-          setSelectedModel(newValue);
-          const product = products.find(p => p.modelo === newValue && p.marca === selectedBrand) || null;
-          onSelectionComplete(product); // Call selection complete with either the product or null
-        }}
+        disabled={!selectedBrand && stepByStep}
       />
-    )}
-      {selectedModel && (
-        <Autocomplete
-          options={names}
-          style={{ marginBottom: '20px' }}  // Visual feedback
-          renderInput={(params) => <TextField {...params} label="Select Name" variant="outlined" />}
-          onChange={(event, newValue: string | null) => {
-            setSelectedName(newValue);
-            const product = products.find(p => p.nome === newValue && p.modelo === selectedModel && p.marca === selectedBrand) || null;
-            onSelectionComplete(product);
-          }}
-        />
-      )}
+      <Autocomplete
+        options={names}
+        value={selectedName}
+        renderInput={(params) => <TextField {...params} label="Nome" variant="outlined" />}
+        onChange={handleNameChange}
+        style={{ marginBottom: '20px' }}
+        disabled={(!selectedBrand || !selectedModel) && stepByStep}
+      />
     </div>
   );
 };

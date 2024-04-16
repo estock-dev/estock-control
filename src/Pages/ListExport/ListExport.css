@@ -1,0 +1,18 @@
+.view-products-list {
+    padding: 24px;
+}
+
+.view-products-list .title {
+    margin-bottom: 32px;
+}
+
+.view-products-list .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    margin-top: 16px;
+}
+
+.view-products-list .buttonGroup > Button {
+    margin-right: 8px;
+}
