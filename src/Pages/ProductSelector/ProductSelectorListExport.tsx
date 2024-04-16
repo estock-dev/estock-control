@@ -3,12 +3,14 @@ import { Autocomplete, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from './../../ReduxStore/hooks';
 import { fetchProducts } from './../../ReduxStore/Slices/productsSlice';
 
-export interface ProductSelectorProps {
-  onSelectionChange: (brand: string | null, model: string | null, name: string | null) => void;
-  stepByStep?: boolean;
-}
+export interface ProductSelectorListExportProps {
+    onSelectionChange: (brand: string | null, model: string | null, name: string | null) => void;
+    selectedNames?: string[];
+    stepByStep?: boolean;
+  }
 
-const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange }) => {
+
+const ProductSelectorListExport: React.FC<ProductSelectorListExportProps> = ({ onSelectionChange, stepByStep = false }) => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -26,10 +28,10 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange }) 
   const brands = Array.from(new Set(products.map(product => product.marca)));
   const models = selectedBrand 
     ? Array.from(new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo)))
-    : [];
+    : Array.from(new Set(products.map(product => product.modelo)));
   const names = selectedModel && selectedBrand 
     ? products.filter(product => product.modelo === selectedModel && product.marca === selectedBrand).map(product => product.nome)
-    : [];
+    : Array.from(new Set(products.map(product => product.nome)));
 
   const handleBrandChange = (_event: unknown, newValue: string | null) => {
     setSelectedBrand(newValue);
@@ -55,26 +57,24 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange }) 
         onChange={handleBrandChange}
         style={{ marginBottom: '20px' }}
       />
-      {selectedBrand && (
-        <Autocomplete
-          options={models}
-          value={selectedModel}
-          renderInput={(params) => <TextField {...params} label="Modelo" variant="outlined" />}
-          onChange={handleModelChange}
-          style={{ marginBottom: '20px' }}
-        />
-      )}
-      {selectedModel && selectedBrand && (
-        <Autocomplete
-          options={names}
-          value={selectedName}
-          renderInput={(params) => <TextField {...params} label="Nome" variant="outlined" />}
-          onChange={handleNameChange}
-          style={{ marginBottom: '20px' }}
-        />
-      )}
+      <Autocomplete
+        options={models}
+        value={selectedModel}
+        renderInput={(params) => <TextField {...params} label="Modelo" variant="outlined" />}
+        onChange={handleModelChange}
+        style={{ marginBottom: '20px' }}
+        disabled={!selectedBrand && stepByStep}
+      />
+      <Autocomplete
+        options={names}
+        value={selectedName}
+        renderInput={(params) => <TextField {...params} label="Nome" variant="outlined" />}
+        onChange={handleNameChange}
+        style={{ marginBottom: '20px' }}
+        disabled={(!selectedBrand || !selectedModel) && stepByStep}
+      />
     </div>
   );
 };
 
-export default ProductSelector;
+export default ProductSelectorListExport;

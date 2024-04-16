@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, message } from 'antd';
-import ProductSelector from "../ProductSelector/ProductSelector";
 import { useAppSelector } from '../../ReduxStore/hooks';
 import { ProductItem } from "../../ReduxStore/Slices/productsSlice";
+import ProductSelectorListExport from '../ProductSelector/ProductSelectorListExport';
 
 const ListExport: React.FC = () => {
     const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -36,7 +36,7 @@ const ListExport: React.FC = () => {
 
     return (
         <div className='view-products-list'>
-            <ProductSelector
+            <ProductSelectorListExport
                 onSelectionChange={(brand, model, name) => {
                     setSelectedBrand(brand);
                     setSelectedModel(model);

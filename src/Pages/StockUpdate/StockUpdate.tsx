@@ -85,7 +85,6 @@ const StockUpdate = () => {
                         setSelectedModel(model);
                         setSelectedName(name);
                     }}
-                    stepByStep={true}
                 />
                 {selectedProduct && (
                     <>
