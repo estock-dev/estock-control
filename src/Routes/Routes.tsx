@@ -12,7 +12,7 @@ import ConsultStockContainer from '../Pages/ConsultStockContainer/ConsultStockCo
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Layout />, // Your Layout component with NavBar and Outlet
+    element: <Layout />,
     errorElement: <Error />,
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
@@ -22,14 +22,10 @@ const routes: RouteObject[] = [
       { path: 'edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'add-product', element: <RequireAuthGuard><AddProduct /></RequireAuthGuard> },
-      { path: 'stock-update', element: <RequireAuthGuard><UpdateStockContainer/></RequireAuthGuard>, },
-      { path: 'stock-consult', element: <RequireAuthGuard><ConsultStockContainer/></RequireAuthGuard>, },
-      
-      // ... potentially other protected routes
+      { path: 'stock-update', element: <RequireAuthGuard><UpdateStockContainer /></RequireAuthGuard>, },
+      { path: 'stock-consult', element: <RequireAuthGuard><ConsultStockContainer /></RequireAuthGuard>, },
     ],
   },
-  // Other routes that should not be inside the Layout can still go here
-  // For example, if you have routes that should not display the NavBar, like a full-screen login page
   {
     path: '/login',
     element: <Login />,

@@ -16,7 +16,7 @@ if (root) {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <UserProvider>
-              <App />
+            <App />
           </UserProvider>
         </PersistGate>
       </Provider>

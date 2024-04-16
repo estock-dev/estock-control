@@ -1,5 +1,5 @@
 export type User = {
-    uid: string; // Unique identifier for the user
+    uid: string; 
     email: string;
     firstName?: string;
     lastName?: string;
@@ -9,7 +9,7 @@ export type User = {
     state?: string;
     zipCode?: string;
     country?: string;
-    photoURL?: string; // This will be used later for social logins
+    photoURL?: string; 
     isAdmin?: boolean;
   };
   

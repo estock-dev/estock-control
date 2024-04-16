@@ -18,6 +18,7 @@ const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
             });
         }
     };
+    
 
     const uploadProducts = async (products: { marca: string; modelo: string; nome: string; qtd: string; }[]) => {
         const collectionRef = collection(db, 'products');
@@ -46,7 +47,7 @@ const ImportProductsCSV = forwardRef<HTMLInputElement>((props, ref) => {
         if (products.length % BATCH_SIZE !== 0) {
             await batch.commit();
         }
-
+        console.log(props)
         alert('Products imported successfully!');
     };
 

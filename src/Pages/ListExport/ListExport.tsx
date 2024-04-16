@@ -46,10 +46,10 @@ const ListExport: React.FC = () => {
             />
             <div className="buttonGroup">
                 <Button onClick={handleExportSelected}>
-                    Export Selection
+                    Exportar Seleção
                 </Button>
                 <Button onClick={handleExportAll}>
-                    Export Full List
+                    Exportar Lista Completa
                 </Button>
             </div>
         </div>
@@ -57,15 +57,14 @@ const ListExport: React.FC = () => {
 }
 
 function convertDataToString(data: ProductItem[]): string {
-    // Convert the product data to a string format.
     return data.map(p => `${p.marca}, ${p.modelo}, ${p.nome}, ${p.qtd}`).join('\n');
 }
 
 function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text).then(() => {
-        message.success('List copied to clipboard');
+        message.success('Lista copiada para o clipboard!');
     }).catch(err => {
-        console.error('Failed to copy: ', err);
+        console.error('s: ', err);
     });
 }
 

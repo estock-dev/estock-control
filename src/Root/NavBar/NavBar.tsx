@@ -19,7 +19,6 @@ const NavBar: React.FC = () => {
         navigate('/home');
     };
 
-    // Check if the current path is one of the specified routes
     const shouldShowBackButton = ['/view-products', '/add-product', '/edit-product', '/stock-update'].some(
         path => location.pathname === path || location.pathname.startsWith(`${path}/`)
     );

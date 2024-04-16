@@ -20,7 +20,6 @@ const initialState: AuthState = {
     error: null,
 };
 
-// Async thunk for signing in
 export const signIn = createAsyncThunk<User, { email: string; password: string }, { state: RootState, rejectValue: string }>(
     'auth/signIn',
     async ({ email, password }, { rejectWithValue }) => {
@@ -37,10 +36,10 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
                     const { uid, ...rest } = userData;
                     return { uid, ...rest };
                 } else {
-                    throw new Error('Invalid user data format.');
+                    throw new Error('Formato inválido de dados do usuário.');
                 }
             } else {
-                throw new Error('User details not found.');
+                throw new Error('Usuário não encontrado.');
             }
 
         } catch (error: unknown) {
@@ -51,7 +50,7 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
                     return rejectWithValue(error.message);
                 }
             } else {
-                return rejectWithValue('An unknown error occurred during sign in.');
+                return rejectWithValue('Um erro desconhecido aconteceu durante o sign in.');
             }
         }
     }
@@ -69,17 +68,17 @@ export const fetchUserDetails = createAsyncThunk<User, string, { state: RootStat
                 if (userData) {
                     return { ...userData as User, uid };
                 } else {
-                    throw new Error('Invalid user data format.');
+                    throw new Error('Formato inválido de dados do usuário.');
                 }
             } else {
-                throw new Error('User details not found.');
+                throw new Error('Usuário não encontrado.');
             }
         } catch (error) {
             // Error handling improved
             if (error instanceof Error) {
                 return rejectWithValue(error.message);
             } else {
-                return rejectWithValue('An unknown error occurred while fetching user details.');
+                return rejectWithValue('Um erro desconhecido aconteceu durante o sign in.');
             }
         }
     }
@@ -94,7 +93,7 @@ export const signOutUser = createAsyncThunk<void, void, { state: RootState }>(
             if (error instanceof Error) {
                 return rejectWithValue(error.message);
             }
-            return rejectWithValue('An unknown error occurred');
+            return rejectWithValue('Um erro desconhecido aconteceu durante o sign out');
         }
     }
 );
@@ -108,7 +107,7 @@ export const updateUserDetails = createAsyncThunk<User, User, { state: RootState
             await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
             return userData;
         } else {
-            throw new Error('No user found');
+            throw new Error('Usuário não encontrado.');
         }
     }
 );
@@ -122,7 +121,6 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         updateUser: (state, action) => {
-            // Update the user details in the Redux state
             if (state.currentUser && action.payload) {
                 state.currentUser = {
                     ...state.currentUser,
@@ -148,36 +146,34 @@ export const authSlice = createSlice({
                 state.error = null;
             })
             .addCase(signIn.fulfilled, (state, action) => {
-                // If the payload has the uid, consider the user authenticated
                 if (action.payload && 'uid' in action.payload) {
                     state.authenticated = true;
                     state.currentUser = action.payload;
                 } else {
-                    // If not, reset the auth state
                     state.authenticated = false;
                     state.currentUser = null;
-                    state.error = 'Invalid user data';
+                    state.error = 'Dados do usuário inválidos.';
                 }
                 state.loading = false;
             })
             .addCase(signIn.rejected, (state, action) => {
                 state.loading = false;
-                state.authenticated = false; // Explicitly set authenticated to false
-                state.currentUser = null; // Clear the current user
-                state.error = action.payload || 'An unknown error occurred during sign in.';
+                state.authenticated = false;
+                state.currentUser = null;
+                state.error = action.payload || 'Um erro desconhecido aconteceu durante o sign in.';
             })
             .addCase(signOutUser.fulfilled, (state) => {
                 state.authenticated = false;
                 state.currentUser = null;
             })
             .addCase(fetchUserDetails.fulfilled, (state, action) => {
-                const uid = state.currentUser?.uid || 'default-uid'; // Replace 'default-uid' with an appropriate fallback.
+                const uid = state.currentUser?.uid || 'default-uid';
                 state.currentUser = { ...action.payload, uid };
-                state.authenticated = true; // Set authenticated true upon successful fetch
+                state.authenticated = true;
             })
             .addCase(fetchUserDetails.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload || 'An unknown error occurred while fetching user details.';
+                state.error = action.payload || 'Um erro desconhecido aconteceu ao buscar as informações do usuário.';
             });
     },
 });

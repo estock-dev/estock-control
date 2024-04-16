@@ -15,7 +15,6 @@ const RequireAuthGuard: React.FC<RequireAuthProps> = ({ children }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Example redirection based on isAdmin flag, adjust as per your requirements
     if (location.pathname.startsWith('/admin') && !isAdmin) {
         return <Navigate to="/" replace />;
     }

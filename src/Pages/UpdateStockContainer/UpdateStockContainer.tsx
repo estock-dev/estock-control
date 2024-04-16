@@ -22,15 +22,12 @@ const UpdateStockContainer: React.FC = () => {
       <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={handleChange}>
         <TabPane tab="Atualizar produto" key="1">
           <Outlet context={{ tab: 'Tab 1' }} />
-
           <div>
             <StockUpdate />
           </div>
         </TabPane>
-        
         <TabPane tab="Adicionar novo produto" key="2">
           <Outlet context={{ tab: 'Tab 2' }} />
-
           <div>
             <AddProduct />
           </div>

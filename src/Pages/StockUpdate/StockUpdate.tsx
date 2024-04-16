@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Typography, Box,
     Radio, RadioGroup, FormControlLabel, FormControl, FormLabel,
@@ -32,7 +32,7 @@ const StockUpdate = () => {
             p.marca === selectedBrand && 
             p.modelo === selectedModel && 
             p.nome === selectedName
-          ) || null; // Ensure that 'product' is null if not found
+          ) || null;
           setSelectedProduct(product);
         } else {
           setSelectedProduct(null);
@@ -50,7 +50,7 @@ const StockUpdate = () => {
             return;
         }
 
-        const isConfirmed = window.confirm(`Confirm the ${quantityUpdateType === 'sale' ? 'sale' : 'restock'} of ${Math.abs(quantityAdjustment)} units?`);
+        const isConfirmed = window.confirm(`Confirmar ${quantityUpdateType === 'sale' ? 'a remoção' : 'o acrécimo'} de ${Math.abs(quantityAdjustment)} unidades?`);
         if (isConfirmed) {
             await dispatch(updateProductQuantity({ id: selectedProduct.id, adjustment: quantityAdjustment }));
             setOpenSnackbar(true);
@@ -90,14 +90,14 @@ const StockUpdate = () => {
                 {selectedProduct && (
                     <>
                         <FormControl component="fieldset" sx={{ mt: 2 }}>
-                            <FormLabel component="legend">Update Type:</FormLabel>
+                            <FormLabel component="legend">Tipo do processo</FormLabel>
                             <RadioGroup
                                 row
                                 value={quantityUpdateType}
                                 onChange={(e) => setQuantityUpdateType(e.target.value as 'sale' | 'restock')}
                             >
-                                <FormControlLabel value="sale" control={<Radio />} label="Sale" />
-                                <FormControlLabel value="restock" control={<Radio />} label="Restock" />
+                                <FormControlLabel value="sale" control={<Radio />} label="Remover do Estoque" />
+                                <FormControlLabel value="restock" control={<Radio />} label="Acrescentar ao Estoque" />
                             </RadioGroup>
                         </FormControl>
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
@@ -119,7 +119,7 @@ const StockUpdate = () => {
                         <Button
                             onClick={handleUpdateStock}
                         >
-                            Update Stock
+                            Atualizar Estoque
                         </Button>
                     </>
                 )}
