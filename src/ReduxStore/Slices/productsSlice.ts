@@ -57,30 +57,34 @@ const initialState: ProductsState = {
 export const updateProductQuantity = createAsyncThunk<
   void,
   { id: string; adjustment: number },
-  { rejectValue: string }
+  { state: RootState, rejectValue: string }
 >(
   'products/updateProductQuantity',
   async ({ id, adjustment }, { rejectWithValue, dispatch, getState }) => {
+    const state = getState();
+    const product = state.products.products.find((p) => p.id === id);
+
+    if (!product) {
+      return rejectWithValue('Product not found');
+    }
+
+    const newQuantity = product.qtd + adjustment;
+    if (newQuantity < 0) {
+      return rejectWithValue('Cannot reduce quantity below 0');
+    }
+
+    // Optimistically update the state first
+    dispatch(productQuantityUpdated({ id, qtd: newQuantity }));
+
     try {
-      const state = getState() as { products: ProductsState };
-      const product = state.products.products.find((p) => p.id === id);
-
-      if (!product) {
-        return rejectWithValue('Product not found');
-      }
-
-      const newQuantity = product.qtd + adjustment;
-      if (newQuantity < 0) {
-        return rejectWithValue('Cannot reduce quantity below 0');
-      }
-
       // Update Firestore document
       const docRef = doc(db, 'products', id);
       await updateDoc(docRef, { qtd: newQuantity });
-
-      dispatch(productQuantityUpdated({ id, qtd: newQuantity }));
     } catch (error) {
       if (error instanceof Error) {
+        console.error('Error updating product quantity:', error);
+        // Revert state update if Firestore update fails
+        dispatch(productQuantityUpdated({ id, qtd: product.qtd }));
         return rejectWithValue(error.message);
       }
       return rejectWithValue('An unknown error occurred while updating product quantity.');
@@ -175,6 +179,7 @@ export const productsSlice = createSlice({
     productQuantityUpdated(state, action: PayloadAction<{ id: string; qtd: number }>) {
       const index = state.products.findIndex((product) => product.id === action.payload.id);
       if (index !== -1) {
+        // Use Immer's ability to handle state updates immutably
         state.products[index].qtd = action.payload.qtd;
       }
     },
