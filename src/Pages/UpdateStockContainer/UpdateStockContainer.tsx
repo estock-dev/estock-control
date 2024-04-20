@@ -19,7 +19,7 @@ const UpdateStockContainer: React.FC = () => {
       <div>
         <Title text='Atualizar Estoque' />
       </div>
-      <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={handleChange}>
+      <Tabs defaultActiveKey="1" activeKey={activeTab} onChange={handleChange}  style={{ margin: "0 auto", maxWidth: 1024 }}>
         <TabPane tab="Atualizar produto" key="1">
           <Outlet context={{ tab: 'Tab 1' }} />
           <div>
