@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
+import { AutoComplete } from 'antd';
 import { useAppDispatch, useAppSelector } from './../../ReduxStore/hooks';
 import { fetchProducts } from './../../ReduxStore/Slices/productsSlice';
 
 export interface ProductSelectorProps {
   onSelectionChange: (brand: string | null, model: string | null, name: string | null) => void;
-  stepByStep?: boolean;
 }
 
 const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange }) => {
@@ -23,54 +22,68 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelectionChange }) 
     onSelectionChange(selectedBrand, selectedModel, selectedName);
   }, [selectedBrand, selectedModel, selectedName, onSelectionChange]);
 
-  const brands = Array.from(new Set(products.map(product => product.marca)));
-  const models = selectedBrand 
-    ? Array.from(new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo)))
-    : [];
-  const names = selectedModel && selectedBrand 
-    ? products.filter(product => product.modelo === selectedModel && product.marca === selectedBrand).map(product => product.nome)
+  // Get unique brands
+  const brandsOptions = Array.from(new Set(products.map(product => product.marca))).map(marca => ({
+    value: marca,
+  }));
+
+  // Get models based on the selected brand
+  const modelsOptions = selectedBrand
+    ? Array.from(
+        new Set(products.filter(product => product.marca === selectedBrand).map(product => product.modelo))
+      ).map(modelo => ({ value: modelo }))
     : [];
 
-  const handleBrandChange = (_event: unknown, newValue: string | null) => {
-    setSelectedBrand(newValue);
-    setSelectedModel(null);
-    setSelectedName(null);
+  // Get names based on the selected brand and model
+  const namesOptions = selectedBrand && selectedModel
+    ? products
+        .filter(product => product.marca === selectedBrand && product.modelo === selectedModel)
+        .map(product => ({ value: product.nome }))
+    : [];
+
+  const handleBrandChange = (value: string) => {
+    setSelectedBrand(value);
+    setSelectedModel(null); // Reset model when brand changes
+    setSelectedName(null);  // Reset name when brand changes
   };
 
-  const handleModelChange = (_event: unknown, newValue: string | null) => {
-    setSelectedModel(newValue);
-    setSelectedName(null);
+  const handleModelChange = (value: string) => {
+    setSelectedModel(value);
+    setSelectedName(null); // Reset name when model changes
   };
 
-  const handleNameChange = (_event: unknown, newValue: string | null) => {
-    setSelectedName(newValue);
+  const handleNameChange = (value: string) => {
+    setSelectedName(value);
   };
 
   return (
     <div>
-      <Autocomplete
-        options={brands}
+      <AutoComplete
+        options={brandsOptions}
         value={selectedBrand}
-        renderInput={(params) => <TextField {...params} label="Marca" variant="outlined" />}
+        placeholder="Marca"
+        style={{ width: '100%', marginBottom: '20px' }}
         onChange={handleBrandChange}
-        style={{ marginBottom: '20px' }}
+        allowClear
       />
       {selectedBrand && (
-        <Autocomplete
-          options={models}
+        <AutoComplete
+          options={modelsOptions}
           value={selectedModel}
-          renderInput={(params) => <TextField {...params} label="Modelo" variant="outlined" />}
+          placeholder="Modelo"
+          style={{ width: '100%', marginBottom: '20px' }}
           onChange={handleModelChange}
-          style={{ marginBottom: '20px' }}
+          allowClear
         />
       )}
       {selectedModel && selectedBrand && (
-        <Autocomplete
-          options={names}
+        <AutoComplete
+          options={namesOptions}
           value={selectedName}
-          renderInput={(params) => <TextField {...params} label="Nome" variant="outlined" />}
+          placeholder="Nome"
+          style={{ width: '100%', marginBottom: '20px' }}
           onChange={handleNameChange}
-          style={{ marginBottom: '20px' }}
+          allowClear
         />
       )}
     </div>

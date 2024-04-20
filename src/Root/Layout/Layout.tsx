@@ -14,7 +14,7 @@ export default function MyLayout() {
                 <Header>
                     <NavBar />
                 </Header>
-                <Content style={{ padding: '0 50px', marginTop: 64, display: 'flex' }}>
+                <Content style={{ padding: '16px', display: 'flex' }}>
                     <div style={{ flex: 1 }}>
                         <Outlet />
                     </div>

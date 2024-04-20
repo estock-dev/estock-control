@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react';
-import {
-    Typography, Box,
-    Radio, RadioGroup, FormControlLabel, FormControl, FormLabel,
-    Snackbar, IconButton
-} from '@mui/material';
-import { Button } from 'antd';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import React, { useState, useEffect } from 'react';
+import { Radio, Form, Button, Typography, notification } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { fetchProducts, ProductItem, updateProductQuantity } from '../../ReduxStore/Slices/productsSlice';
 import { useAppDispatch, useAppSelector } from '../../ReduxStore/hooks';
 import ProductSelector from './../ProductSelector/ProductSelector';
+import './StockUpdate.css'
+const { Text } = Typography;
 
 const StockUpdate = () => {
     const dispatch = useAppDispatch();
@@ -20,7 +16,6 @@ const StockUpdate = () => {
     const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
     const [quantityUpdate, setQuantityUpdate] = useState(0);
     const [quantityUpdateType, setQuantityUpdateType] = useState<'sale' | 'restock'>('restock');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
 
     useEffect(() => {
         dispatch(fetchProducts());
@@ -28,16 +23,16 @@ const StockUpdate = () => {
 
     useEffect(() => {
         if (selectedBrand && selectedModel && selectedName) {
-          const product = products.find(p => 
-            p.marca === selectedBrand && 
-            p.modelo === selectedModel && 
-            p.nome === selectedName
-          ) || null;
-          setSelectedProduct(product);
+            const product = products.find(p =>
+                p.marca === selectedBrand &&
+                p.modelo === selectedModel &&
+                p.nome === selectedName
+            ) || null;
+            setSelectedProduct(product);
         } else {
-          setSelectedProduct(null);
+            setSelectedProduct(null);
         }
-      }, [selectedBrand, selectedModel, selectedName, products]);
+    }, [selectedBrand, selectedModel, selectedName, products]);
 
     const handleUpdateStock = async () => {
         if (!selectedProduct) return;
@@ -46,14 +41,20 @@ const StockUpdate = () => {
         const newQuantity = selectedProduct.qtd + quantityAdjustment;
 
         if (newQuantity < 0) {
-            alert('Não é possível ter quantidade de estoque negativa.');
+            notification.error({
+                message: 'Não é possível ter quantidade de estoque negativa.',
+                duration: 2
+            });
             return;
         }
 
         const isConfirmed = window.confirm(`Confirmar ${quantityUpdateType === 'sale' ? 'a remoção' : 'o acrécimo'} de ${Math.abs(quantityAdjustment)} unidades?`);
         if (isConfirmed) {
             await dispatch(updateProductQuantity({ id: selectedProduct.id, adjustment: quantityAdjustment }));
-            setOpenSnackbar(true);
+            notification.success({
+                message: 'Product quantity updated',
+                duration: 2
+            });
             resetForm();
         }
     };
@@ -73,62 +74,41 @@ const StockUpdate = () => {
         setQuantityUpdate(Math.max(0, quantityUpdate - 1));
     };
 
-    const handleCloseSnackbar = () => {
-        setOpenSnackbar(false);
-    };
-
     return (
         <div className='view-products-list'>
-                <ProductSelector
-                    onSelectionChange={(brand, model, name) => {
-                        setSelectedBrand(brand);
-                        setSelectedModel(model);
-                        setSelectedName(name);
-                    }}
-                />
-                {selectedProduct && (
-                    <>
-                        <FormControl component="fieldset" sx={{ mt: 2 }}>
-                            <FormLabel component="legend">Tipo do processo</FormLabel>
-                            <RadioGroup
-                                row
-                                value={quantityUpdateType}
-                                onChange={(e) => setQuantityUpdateType(e.target.value as 'sale' | 'restock')}
-                            >
-                                <FormControlLabel value="sale" control={<Radio />} label="Remover do Estoque" />
-                                <FormControlLabel value="restock" control={<Radio />} label="Acrescentar ao Estoque" />
-                            </RadioGroup>
-                        </FormControl>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                            <IconButton onClick={handleDecrement} color="primary">
-                                <RemoveCircleOutlineIcon fontSize="large" />
-                            </IconButton>
-                            <Typography variant="h4" sx={{ mx: 2, minWidth: 50, textAlign: 'center' }}>
-                                {quantityUpdate}
-                            </Typography>
-                            <IconButton onClick={handleIncrement} color="secondary">
-                                <AddCircleOutlineIcon fontSize="large" />
-                            </IconButton>
-                        </Box>
-                        <Box sx={{ display: 'flex', justifyContent: "right", alignItems: 'center', mt: 2 }}>
-                            <Typography variant="h6" sx={{ mx: 2, minWidth: 50, textAlign: 'center' }}>
-                                Current Quantity: {selectedProduct.qtd}
-                            </Typography>
-                        </Box>
-                        <Button
-                            onClick={handleUpdateStock}
-                        >
-                            Atualizar Estoque
-                        </Button>
-                    </>
-                )}
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                message="Product quantity updated"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            <ProductSelector
+                onSelectionChange={(brand, model, name) => {
+                    setSelectedBrand(brand);
+                    setSelectedModel(model);
+                    setSelectedName(name);
+                }}
             />
+            {selectedProduct && (
+                <>
+                    <Form layout="vertical" style={{ marginTop: '20px' }}>
+                        <Form.Item label="Tipo do processo">
+                            <Radio.Group
+                                optionType="button"
+                                value={quantityUpdateType}
+                                onChange={(e) => setQuantityUpdateType(e.target.value)}
+                                buttonStyle="solid"
+                            >
+                                <Radio.Button value="sale">Remover do Estoque</Radio.Button>
+                                <Radio.Button value="restock">Acrescentar ao Estoque</Radio.Button>
+                            </Radio.Group>
+                        </Form.Item>
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                            <Button icon={<MinusCircleOutlined />} onClick={handleDecrement} />
+                            <Text style={{ margin: '0 16px', fontSize: '24px', minWidth: '50px', textAlign: 'center' }}>{quantityUpdate}</Text>
+                            <Button icon={<PlusCircleOutlined />} color="blue" onClick={handleIncrement} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: "right", alignItems: 'center', marginTop: '20px' }}>
+                            <Text style={{ margin: '0 16px', fontSize: '18px', textAlign: 'center' }}>Current Quantity: {selectedProduct.qtd}</Text>
+                        </div>
+                        <Button onClick={handleUpdateStock}>Atualizar Estoque</Button>
+                    </Form>
+                </>
+            )}
         </div>
     );
 };

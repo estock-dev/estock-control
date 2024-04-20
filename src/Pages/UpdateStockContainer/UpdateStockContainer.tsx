@@ -15,7 +15,7 @@ const UpdateStockContainer: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px', background: '#fff', minHeight: 360 }}>
+    <div style={{ minHeight: 360 }}>
       <div>
         <Title text='Atualizar Estoque' />
       </div>

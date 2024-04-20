@@ -1,18 +1,18 @@
 .title-container {
-    margin-bottom: 32px;
+    margin-top: 96px;
     text-align: left;
   }
   
   .title-text {
-    color: #676565;
     margin-bottom: 8px;
-    font-weight: bold;
     font-size: 24px;
+    
   }
   
   .title-underline {
     border: 0;
     height: 2px;
     background-color: #676565;
+    margin-bottom: 32px;
   }
   

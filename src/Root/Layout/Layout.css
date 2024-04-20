@@ -10,9 +10,9 @@
 }
 
 .ant-layout-content {
-    margin-top: 64px;
+    
     padding: 0;
-    background: #fff;
+    
 }
 
 @media (max-width: 768px) {

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Box, Typography, Paper, Alert, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Autocomplete } from '@mui/material';
+import { Form, Input, Button, Radio, Select, Typography, notification } from 'antd';
 import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
 import { fetchProducts, fetchModelsForBrand } from '../../ReduxStore/Slices/productsSlice';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+
+const { Option } = Select;
+const { Text, Title } = Typography;
 
 const validationSchema = yup.object({
   marca: yup.string().required('Brand is required'),
@@ -19,7 +22,7 @@ const AddProduct = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
   const brands = Array.from(new Set(products.map(product => product.marca)));
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -35,22 +38,22 @@ const AddProduct = () => {
       nome: '',
       qtd: '',
     },
-    validationSchema: validationSchema,
-     onSubmit: async ({ brandOption, modelOption, ...values }) => {
+    validationSchema,
+    onSubmit: async ({ brandOption, modelOption, ...values }) => {
       try {
         await addDoc(collection(db, "products"), values);
         setSubmitted(true); // Set the submitted state to true when product is added
       } catch (error) {
         console.error('Error adding product to Firestore: ', error);
-        
       }
     },
   });
-  
+
   const handleAddAnotherProduct = () => {
     formik.resetForm();
     setSubmitted(false);
   };
+
   const uniqueModels = Array.from(new Set(products
     .filter(product => product.marca === formik.values.marca)
     .map(product => product.modelo)
@@ -65,134 +68,138 @@ const AddProduct = () => {
   if (submitted) {
     // Feedback UI after successful submission
     return (
-      <Container maxWidth="lg">
-        <Typography variant="h3">Product successfully added!</Typography>
-        <Box>
-          <Button onClick={handleAddAnotherProduct} variant="contained">
-            Add another product
-          </Button>
-          <Button onClick={() => navigate('/')} variant="contained" color="secondary">
-            Go to home
-          </Button>
-        </Box>
-      </Container>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <Title level={2}>Product successfully added!</Title>
+        <div>
+          <Button onClick={handleAddAnotherProduct}>Add another product</Button>
+          <Button onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>Go to home</Button>
+        </div>
+      </div>
     );
   }
-  
+
   return (
-    <Container maxWidth="lg">
-      <Paper elevation={2}>
-        <form onSubmit={formik.handleSubmit}>
-          <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
-            <FormLabel component="legend"><Typography>Para adicionar um novo produto, comece escolhendo uma marca ou adicione uma nova.</Typography></FormLabel>
-            <RadioGroup
-              row
-              name="brandOption"
-              value={formik.values.brandOption}
-              onChange={formik.handleChange}
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <form onSubmit={formik.handleSubmit}>
+        <Form.Item label="Para adicionar um novo produto, comece escolhendo uma marca ou adicione uma nova.">
+          <Radio.Group
+            name="brandOption"
+            value={formik.values.brandOption}
+            onChange={formik.handleChange}
+            optionType="button"
+            buttonStyle="solid"
+          >
+            <Radio.Button value="existing">Existing Brand</Radio.Button>
+            <Radio.Button value="new">New Brand</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <div>
+          {formik.values.brandOption === 'existing' ? (
+            <Form.Item
+              validateStatus={formik.touched.marca && formik.errors.marca ? 'error' : ''}
+              help={formik.touched.marca && formik.errors.marca}
             >
-              <FormControlLabel value="existing" control={<Radio />} label="Existing Brand" />
-              <FormControlLabel value="new" control={<Radio />} label="New Brand" />
-            </RadioGroup>
-          </FormControl>
-          <Box sx={{ '& .MuiTextField-root': { width: '100%', marginBottom: '20px' } }}>
-            {formik.values.brandOption === 'existing' ? (
-              <Autocomplete
-                options={brands}
-                getOptionLabel={(option) => option}
-                onChange={(event, value) => formik.setFieldValue('marca', value)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Brand"
-                    variant="outlined"
-                    error={formik.touched.marca && Boolean(formik.errors.marca)}
-                    helperText={formik.touched.marca && formik.errors.marca}
-                  />
-                )}
-              />
-            ) : (
-              <TextField
-                label="New Brand"
+              <Select
+                showSearch
+                placeholder="Select Brand"
+                onChange={value => formik.setFieldValue('marca', value)}
+              >
+                {brands.map(brand => (
+                  <Option key={brand} value={brand}>{brand}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ) : (
+            <Form.Item
+              validateStatus={formik.touched.marca && formik.errors.marca ? 'error' : ''}
+              help={formik.touched.marca && formik.errors.marca}
+            >
+              <Input
+                placeholder="New Brand"
                 name="marca"
-                type="text"
                 onChange={formik.handleChange}
                 value={formik.values.marca}
-                error={formik.touched.marca && Boolean(formik.errors.marca)}
-                helperText={formik.touched.marca && formik.errors.marca}
               />
-            )}
-            {formik.values.marca && (
-          <React.Fragment>
-            <FormControl component="fieldset" sx={{ marginBottom: '20px' }}>
-                  <FormLabel component="legend">Use an existing model or add a new model?</FormLabel>
-                  <RadioGroup
-                    row
-                    name="modelOption"
-                    value={formik.values.modelOption}
-                    onChange={formik.handleChange}
+            </Form.Item>
+          )}
+          {formik.values.marca && (
+            <>
+              <Form.Item label="Use an existing model or add a new model?">
+                <Radio.Group
+                  name="modelOption"
+                  value={formik.values.modelOption}
+                  onChange={formik.handleChange}
+                  optionType="button"
+                  buttonStyle="solid"
+                >
+                  <Radio.Button value="existing">Existing Model</Radio.Button>
+                  <Radio.Button value="new">New Model</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+              {formik.values.modelOption === 'existing' ? (
+                <Form.Item
+                  validateStatus={formik.touched.modelo && formik.errors.modelo ? 'error' : ''}
+                  help={formik.touched.modelo && formik.errors.modelo}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Select Model"
+                    onChange={value => formik.setFieldValue('modelo', value)}
                   >
-                    <FormControlLabel value="existing" control={<Radio />} label="Existing Model" />
-                    <FormControlLabel value="new" control={<Radio />} label="New Model" />
-                  </RadioGroup>
-                </FormControl>
-            {formik.values.modelOption === 'existing' ? (
-              <Autocomplete
-                options={uniqueModels} // Use the uniqueModels array here
-                getOptionLabel={(option) => option}
-                onChange={(event, value) => formik.setFieldValue('modelo', value)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Model"
-                    variant="outlined"
-                    error={formik.touched.modelo && Boolean(formik.errors.modelo)}
-                    helperText={formik.touched.modelo && formik.errors.modelo}
-                  />
-                )}
-              />
-                ) : (
-                  <TextField
-                    label="New Model"
+                    {uniqueModels.map(model => (
+                      <Option key={model} value={model}>{model}</Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              ) : (
+                <Form.Item
+                  validateStatus={formik.touched.modelo && formik.errors.modelo ? 'error' : ''}
+                  help={formik.touched.modelo && formik.errors.modelo}
+                >
+                  <Input
+                    placeholder="New Model"
                     name="modelo"
-                    type="text"
                     onChange={formik.handleChange}
                     value={formik.values.modelo}
-                    error={formik.touched.modelo && Boolean(formik.errors.modelo)}
-                    helperText={formik.touched.modelo && formik.errors.modelo}
                   />
-                )}
-              </React.Fragment>
-            )}
-            {formik.values.modelo && (
-              <TextField
-                label="Nome"
+                </Form.Item>
+              )}
+            </>
+          )}
+          {formik.values.modelo && (
+            <Form.Item
+              validateStatus={formik.touched.nome && formik.errors.nome ? 'error' : ''}
+              help={formik.touched.nome && formik.errors.nome}
+            >
+              <Input
+                placeholder="Nome"
                 name="nome"
-                type="text"
                 onChange={formik.handleChange}
                 value={formik.values.nome}
-                error={formik.touched.nome && Boolean(formik.errors.nome)}
-                helperText={formik.touched.nome && formik.errors.nome}
               />
-            )}
-            {formik.values.nome && (
-              <TextField
-                label="Quantity"
+            </Form.Item>
+          )}
+          {formik.values.nome && (
+            <Form.Item
+              validateStatus={formik.touched.qtd && formik.errors.qtd ? 'error' : ''}
+              help={formik.touched.qtd && formik.errors.qtd}
+            >
+              <Input
+                placeholder="Quantity"
                 name="qtd"
                 type="number"
                 onChange={formik.handleChange}
                 value={formik.values.qtd}
-                error={formik.touched.qtd && Boolean(formik.errors.qtd)}
-                helperText={formik.touched.qtd && formik.errors.qtd}
               />
-            )}
-            <Button type="submit" variant="contained" disabled={!formik.values.nome || !formik.values.qtd}>
-              Submit
-            </Button>
-          </Box>
-        </form>
-      </Paper>
-    </Container >
+            </Form.Item>
+          )}
+          <Button htmlType="submit" type="primary" disabled={!formik.values.nome || !formik.values.qtd}>
+            Adicionar Produto
+          </Button>
+
+        </div>
+      </form>
+    </div>
   );
 };
 
