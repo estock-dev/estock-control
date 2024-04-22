@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { query, where, collection, getDocs, doc, getDoc, updateDoc, FirestoreError } from 'firebase/firestore';
 import { db } from  '../../Configuration/firebase'
 import type { RootState } from '../store';
@@ -152,6 +152,8 @@ export const fetchProductById = createAsyncThunk<ProductItem, string, { rejectVa
   }
 );
 
+export const setCurrentProduct = createAction<{ id: string }>('products/setCurrentProduct');
+
 export const selectAllBrands = (state: RootState) => {
   const brands = state.products.products.map((product) => product.marca);
   return [...new Set(brands)]; 
@@ -187,6 +189,9 @@ export const productsSlice = createSlice({
     },
     setIncludeQuantity(state, action: PayloadAction<boolean>) {
       state.includeQuantity = action.payload;
+    },
+    setCurrentProduct(state, action: PayloadAction<{ id: string }>) {
+      state.currentProduct = state.products.find(p => p.id === action.payload.id) || null;
     },
   
   },

@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Radio, Select, Typography, notification } from 'antd';
+import { useState, useEffect } from 'react';
+import { Form, Input, Button, Radio, Select, Typography } from 'antd';
 import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
 import { fetchProducts, fetchModelsForBrand } from '../../ReduxStore/Slices/productsSlice';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import { db } from '../../Configuration/firebase';
 import { useNavigate } from 'react-router-dom';
+import { Modal } from 'antd';
+import { setCurrentProduct } from '../../ReduxStore/Slices/productsSlice';
 
 const { Option } = Select;
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 const validationSchema = yup.object({
-  marca: yup.string().required('Brand is required'),
-  modelo: yup.string().required('Model is required'),
-  nome: yup.string().required('Name is required'),
-  qtd: yup.number().positive('Quantity must be positive').required('Quantity is required'),
+  marca: yup.string().required('Você precisa escolher uma Marca'),
+  modelo: yup.string().required('Você precisa escolher um Modelo'),
+  nome: yup.string().required('Você precisa escolher um Nome'),
+  qtd: yup.number().positive('Para adicionar um produto pela primeira vez, quantidade deve ser positiva e diferente de 0').required('Você precisa escolher uma Quantidade'),
 });
 
 const AddProduct = () => {
@@ -29,6 +31,22 @@ const AddProduct = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  const checkDuplicateProduct = async (marca: string, modelo: string, nome: string) => {
+    // Query Firestore to check for existing product with same marca, modelo, nome
+    const querySnapshot = await getDocs(query(collection(db, "products"), where("marca", "==", marca), where("modelo", "==", modelo), where("nome", "==", nome)));
+    // If any documents are found, it's a duplicate
+    return !querySnapshot.empty;
+  };
+
+  const getExistingProductId = async (marca: string, modelo: string, nome: string) => {
+    const querySnapshot = await getDocs(query(collection(db, "products"), where("marca", "==", marca), where("modelo", "==", modelo), where("nome", "==", nome)));
+    if (!querySnapshot.empty) {
+      // Assuming that there's only one product with this combination
+      return querySnapshot.docs[0].id;
+    }
+    return null;
+  };
+
   const formik = useFormik({
     initialValues: {
       brandOption: 'existing',
@@ -40,11 +58,37 @@ const AddProduct = () => {
     },
     validationSchema,
     onSubmit: async ({ brandOption, modelOption, ...values }) => {
+      const { marca, modelo, nome } = values;
+      const isDuplicate = await checkDuplicateProduct(marca, modelo, nome);
+
+      if (isDuplicate) {
+        Modal.confirm({
+          title: 'Este produto já existe!',
+          content: 'Você quer atualizar este produto existente ou deseja voltar à tela anterior?',
+          okText: 'Atualizar Produto Existente',
+          cancelText: 'Voltar à tela anterior',
+          onOk: async () => {
+            const existingProductId = await getExistingProductId(marca, modelo, nome);
+            if (existingProductId) {
+              dispatch(setCurrentProduct({ id: existingProductId }));
+              navigate(`/edit-product/${existingProductId}`);
+            } else {
+              alert('Error on console related to the product ID');
+              console.error('Product ID could not be found');
+            }
+          },
+          onCancel: () => {
+
+          },
+        });
+        return;
+      }
+
       try {
         await addDoc(collection(db, "products"), values);
-        setSubmitted(true); // Set the submitted state to true when product is added
+        setSubmitted(true); 
       } catch (error) {
-        console.error('Error adding product to Firestore: ', error);
+        console.error('Erro ao adicionar o produto à base de dados: ', error);
       }
     },
   });
@@ -66,7 +110,6 @@ const AddProduct = () => {
   }, [formik.values.marca, dispatch]);
 
   if (submitted) {
-    // Feedback UI after successful submission
     return (
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         <Title level={2}>Product successfully added!</Title>
@@ -81,7 +124,7 @@ const AddProduct = () => {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <form onSubmit={formik.handleSubmit}>
-        <Form.Item label="Para adicionar um novo produto, comece escolhendo uma marca ou adicione uma nova.">
+        <Form.Item label="Para adicionar um novo produto, comece escolhendo uma marca ou adicione uma nova">
           <Radio.Group
             name="brandOption"
             value={formik.values.brandOption}
@@ -89,8 +132,8 @@ const AddProduct = () => {
             optionType="button"
             buttonStyle="solid"
           >
-            <Radio.Button value="existing">Existing Brand</Radio.Button>
-            <Radio.Button value="new">New Brand</Radio.Button>
+            <Radio.Button value="existing">Marca Existente</Radio.Button>
+            <Radio.Button value="new">Nova Marca</Radio.Button>
           </Radio.Group>
         </Form.Item>
         <div>
@@ -101,7 +144,7 @@ const AddProduct = () => {
             >
               <Select
                 showSearch
-                placeholder="Select Brand"
+                placeholder="Selecionar Marca"
                 onChange={value => formik.setFieldValue('marca', value)}
               >
                 {brands.map(brand => (
@@ -115,7 +158,7 @@ const AddProduct = () => {
               help={formik.touched.marca && formik.errors.marca}
             >
               <Input
-                placeholder="New Brand"
+                placeholder="Inserir Nova Marca"
                 name="marca"
                 onChange={formik.handleChange}
                 value={formik.values.marca}
@@ -124,7 +167,7 @@ const AddProduct = () => {
           )}
           {formik.values.marca && (
             <>
-              <Form.Item label="Use an existing model or add a new model?">
+              <Form.Item label="Quer selecionar um modelo existente ou adicionar um novo modelo?">
                 <Radio.Group
                   name="modelOption"
                   value={formik.values.modelOption}
@@ -132,8 +175,8 @@ const AddProduct = () => {
                   optionType="button"
                   buttonStyle="solid"
                 >
-                  <Radio.Button value="existing">Existing Model</Radio.Button>
-                  <Radio.Button value="new">New Model</Radio.Button>
+                  <Radio.Button value="existing">Modelo Existente</Radio.Button>
+                  <Radio.Button value="new">Novo Modelo</Radio.Button>
                 </Radio.Group>
               </Form.Item>
               {formik.values.modelOption === 'existing' ? (
@@ -143,7 +186,7 @@ const AddProduct = () => {
                 >
                   <Select
                     showSearch
-                    placeholder="Select Model"
+                    placeholder="Selecionar Modelo"
                     onChange={value => formik.setFieldValue('modelo', value)}
                   >
                     {uniqueModels.map(model => (
@@ -157,7 +200,7 @@ const AddProduct = () => {
                   help={formik.touched.modelo && formik.errors.modelo}
                 >
                   <Input
-                    placeholder="New Model"
+                    placeholder="Inserir Novo Modelo"
                     name="modelo"
                     onChange={formik.handleChange}
                     value={formik.values.modelo}
@@ -185,7 +228,7 @@ const AddProduct = () => {
               help={formik.touched.qtd && formik.errors.qtd}
             >
               <Input
-                placeholder="Quantity"
+                placeholder="Quantidade"
                 name="qtd"
                 type="number"
                 onChange={formik.handleChange}

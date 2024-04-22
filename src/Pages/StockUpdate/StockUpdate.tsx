@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Radio, Form, Button, Typography, notification } from 'antd';
+import { useState, useEffect } from 'react';
+import { Modal, Radio, Form, Button, Typography, notification } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { fetchProducts, ProductItem, updateProductQuantity } from '../../ReduxStore/Slices/productsSlice';
 import { useAppDispatch, useAppSelector } from '../../ReduxStore/hooks';
 import ProductSelector from './../ProductSelector/ProductSelector';
 import './StockUpdate.css'
 const { Text } = Typography;
+
+
 
 const StockUpdate = () => {
     const dispatch = useAppDispatch();
@@ -48,15 +50,23 @@ const StockUpdate = () => {
             return;
         }
 
-        const isConfirmed = window.confirm(`Confirmar ${quantityUpdateType === 'sale' ? 'a remoção' : 'o acrécimo'} de ${Math.abs(quantityAdjustment)} unidades?`);
-        if (isConfirmed) {
-            await dispatch(updateProductQuantity({ id: selectedProduct.id, adjustment: quantityAdjustment }));
-            notification.success({
-                message: 'Product quantity updated',
-                duration: 2
-            });
-            resetForm();
-        }
+        Modal.confirm({
+            title: `Confirmar ${quantityUpdateType === 'sale' ? 'a remoção' : 'o acrécimo'}`,
+            okText: 'Ok',
+            cancelText: 'Cancelar',
+            content: `Deseja confirmar ${quantityUpdateType === 'sale' ? 'a remoção' : 'o acréscimo'} de ${Math.abs(quantityAdjustment)} unidades?`,
+            onOk: async () => {
+                await dispatch(updateProductQuantity({ id: selectedProduct.id, adjustment: quantityAdjustment }));
+                notification.success({
+                    message: 'Quantidade do produto atualizada!',
+                    duration: 2
+                });
+                resetForm();
+            },
+            onCancel() {
+                console.log('Atualização de produto cancelada!');
+            },
+        });
     };
 
     const resetForm = () => {
@@ -103,7 +113,7 @@ const StockUpdate = () => {
                             <Button icon={<PlusCircleOutlined />} color="blue" onClick={handleIncrement} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: "right", alignItems: 'center', marginTop: '20px' }}>
-                            <Text style={{ margin: '0 16px', fontSize: '18px', textAlign: 'center' }}>Current Quantity: {selectedProduct.qtd}</Text>
+                            <Text style={{ margin: '0 16px', fontSize: '18px', textAlign: 'center' }}>Quantidade Atual: {selectedProduct.qtd}</Text>
                         </div>
                         <Button onClick={handleUpdateStock}>Atualizar Estoque</Button>
                     </Form>
