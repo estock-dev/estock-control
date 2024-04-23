@@ -69,7 +69,7 @@ export default function HomeStyledOptions() {
                             onClick={
                                 item.name === 'Lista Rápida' ? handleExportAll : () => navigate(item.href)}
                             style={{
-                                margin: '10px auto',
+                                margin: '24px',
                                 padding: '20px',
                                 borderRadius: '10px',
                                 cursor: 'pointer',
@@ -82,9 +82,9 @@ export default function HomeStyledOptions() {
                             }}
                             className="hoverable-list-item"
                         >
-                            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {/* <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 {<item.icon aria-hidden="true" />}
-                            </div>
+                            </div> */}
                             <p style={{ margin: '10px 0 0 0', fontSize: '18px', fontWeight: 'normal' }}>{item.name}</p>
                         </List.Item>
                     )}
