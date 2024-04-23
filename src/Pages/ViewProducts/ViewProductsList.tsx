@@ -62,10 +62,6 @@ const ViewProductsList: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-  };
-
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -149,7 +145,6 @@ const ViewProductsList: React.FC = () => {
 
   return (
     <div className="view-products-list">
-
       <Table
         key={filterResetKey}
         rowSelection={rowSelection}
@@ -157,8 +152,12 @@ const ViewProductsList: React.FC = () => {
         dataSource={products}
         pagination={{
           pageSize: pageSize,
-          onShowSizeChange: handlePageSizeChange,
+          onChange: (page, pageSize) => {
+            // Handle both page and pageSize changes
+            setPageSize(pageSize);
+          },
           showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100'], // This provides options in the dropdown
         }}
         className="customTable"
       />
