@@ -1,8 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { Card, List } from 'antd';
+import { Card, List, message } from 'antd';
 import iconUpdate from './../../assets/Logos/Opcao1/e-stock-logotransp.png'
 import iconFetch from './../../assets/Logos/Opcao2/logotransparente.png'
 import iconQuickMessage from './../../assets/Logos/Icones/message2.png'
+import { useAppDispatch, useAppSelector } from '../../ReduxStore/hooks';
+import { useEffect,  } from 'react';
+import { fetchProducts, ProductItem } from '../../ReduxStore/Slices/productsSlice';
 
 const solutions = [
     {
@@ -23,7 +26,37 @@ const solutions = [
 ];
 
 export default function HomeStyledOptions() {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const products = useAppSelector(state => state.products.products);
+    function convertDataToString(data: ProductItem[]): string {
+        return data.map(p => `${p.marca}, ${p.modelo}, ${p.nome}, ${p.qtd}`).join('\n');
+      }
+      
+      function copyToClipboard(text: string) {
+        if (!text) {
+          message.error('Não há dados para copiar.');
+          return;
+        }
+      
+        navigator.clipboard.writeText(text).then(() => {
+          message.success('Lista copiada para o clipboard!');
+        }).catch(err => {
+          console.error('Error copying to clipboard: ', err);
+          message.error('Falha ao copiar para o clipboard. Tente novamente.');
+        });
+      }
+
+    const handleExportAll = () => {
+        const productListString = convertDataToString(products);
+        copyToClipboard(productListString);
+      };
+
+
+    useEffect(() => {
+        dispatch(fetchProducts());
+      }, [dispatch]);
+    
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -33,7 +66,8 @@ export default function HomeStyledOptions() {
                     dataSource={solutions}
                     renderItem={item => (
                         <List.Item
-                            onClick={() => navigate(item.href)}
+                            onClick={
+                                item.name === 'Lista Rápida' ? handleExportAll : () => navigate(item.href)}
                             style={{
                                 margin: '10px auto',
                                 padding: '20px',
@@ -41,7 +75,7 @@ export default function HomeStyledOptions() {
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s',
                                 display: 'flex',
-                                flexDirection: 'column', // Changed to column to align items on top of each other
+                                flexDirection: 'column',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 textAlign: 'center',

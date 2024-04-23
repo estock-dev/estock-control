@@ -1,98 +1,113 @@
 import React, { useState, useEffect } from 'react';
-import { AutoComplete } from 'antd';
+import { Select } from 'antd';
 import { useAppDispatch, useAppSelector } from './../../ReduxStore/hooks';
 import { fetchProducts } from './../../ReduxStore/Slices/productsSlice';
 
+const { Option } = Select;
+
 export interface ProductSelectorListExportProps {
-  onSelectionChange: (brand: string | null, model: string | null, name: string | null) => void;
-  selectedNames?: string[];
-  stepByStep?: boolean;
+  onSelectionChange: (brand: string[] | null, model: string[] | null, name: string[] | null) => void;
 }
 
 const ProductSelectorListExport: React.FC<ProductSelectorListExportProps> = ({
   onSelectionChange,
-  stepByStep = false,
 }) => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.products);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
-  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  const [selectedNames, setSelectedNames] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
   useEffect(() => {
-    onSelectionChange(selectedBrand, selectedModel, selectedName);
-  }, [selectedBrand, selectedModel, selectedName, onSelectionChange]);
+    onSelectionChange(selectedBrands, selectedModels, selectedNames);
+  }, [selectedBrands, selectedModels, selectedNames, onSelectionChange]);
 
-  // Extract unique brands, models, and names from products
-  const brandOptions = Array.from(new Set(products.map(product => product.marca)))
-    .map(marca => ({ value: marca }));
-  const modelOptions = selectedBrand || !stepByStep
-    ? Array.from(new Set(products.filter(product => !selectedBrand || product.marca === selectedBrand)
-      .map(product => product.modelo)))
-    .map(modelo => ({ value: modelo }))
-    : [];
-  const nameOptions = (selectedModel && selectedBrand) || !stepByStep
-    ? Array.from(new Set(products.filter(product => (!selectedBrand || product.marca === selectedBrand) &&
-      (!selectedModel || product.modelo === selectedModel))
-      .map(product => product.nome)))
-    .map(nome => ({ value: nome }))
-    : [];
-
-  const handleBrandChange = (value: string) => {
-    setSelectedBrand(value);
-    if (stepByStep) {
-      setSelectedModel(null);
-      setSelectedName(null);
+  const handleSelectionChange = (value: string[], type: 'brand' | 'model' | 'name') => {
+    switch (type) {
+      case 'brand':
+        setSelectedBrands(value);
+        break;
+      case 'model':
+        setSelectedModels(value);
+        break;
+      case 'name':
+        setSelectedNames(value);
+        break;
+      default:
+        break;
     }
-    onSelectionChange(value, null, null);
+    onSelectionChange(selectedBrands, selectedModels, selectedNames);
   };
-
-  const handleModelChange = (value: string) => {
-    setSelectedModel(value);
-    if (stepByStep) {
-      setSelectedName(null);
+  
+  const generateOptions = (field: 'marca' | 'modelo' | 'nome'): string[] => {
+    let filteredProducts = products;
+  
+    // If any brands are selected, filter the products by those brands
+    if (selectedBrands.length > 0 && field !== 'marca') {
+      filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.marca));
     }
-    onSelectionChange(selectedBrand, value, null);
+  
+    // If any models are selected, filter the products by those models
+    if (selectedModels.length > 0 && field !== 'modelo') {
+      filteredProducts = filteredProducts.filter(product => selectedModels.includes(product.modelo));
+    }
+  
+    // If any names are selected, filter the products by those names
+    if (selectedNames.length > 0 && field !== 'nome') {
+      filteredProducts = filteredProducts.filter(product => selectedNames.includes(product.nome));
+    }
+  
+    // Return the unique options for the specified field
+    return Array.from(new Set(filteredProducts.map(product => product[field])));
   };
+  
 
-  const handleNameChange = (value: string) => {
-    setSelectedName(value);
-    onSelectionChange(selectedBrand, selectedModel, value);
-  };
+  const renderOptions = (options: string[]) => [
+    ...options.map((option) => (
+      <Option key={option} value={option}>
+        {option}
+      </Option>
+    )),
+  ];
 
   return (
     <div>
-      <AutoComplete
-        options={brandOptions}
-        value={selectedBrand}
+      <Select
+        mode="multiple"
+        style={{ width: '100%', marginBottom: '20px' }}
         placeholder="Marca"
-        style={{ width: '100%', marginBottom: '20px' }}
-        onChange={handleBrandChange}
+        value={selectedBrands}
+        onChange={(value) => handleSelectionChange(value, 'brand')}
         allowClear
-        
-      />
-      <AutoComplete
-        options={modelOptions}
-        value={selectedModel}
+      >
+        {renderOptions(generateOptions('marca'))}
+      </Select>
+
+      <Select
+        mode="multiple"
+        style={{ width: '100%', marginBottom: '20px' }}
         placeholder="Modelo"
-        style={{ width: '100%', marginBottom: '20px' }}
-        onChange={handleModelChange}
+        value={selectedModels}
+        onChange={(value) => handleSelectionChange(value, 'model')}
         allowClear
-        
-      />
-      <AutoComplete
-        options={nameOptions}
-        value={selectedName}
+      >
+        {renderOptions(generateOptions('modelo'))}
+      </Select>
+
+      <Select
+        mode="multiple"
+        style={{ width: '100%', marginBottom: '20px' }}
         placeholder="Nome"
-        style={{ width: '100%', marginBottom: '20px' }}
-        onChange={handleNameChange}
+        value={selectedNames}
+        onChange={(value) => handleSelectionChange(value, 'name')}
         allowClear
-        
-      />
+      >
+        {renderOptions(generateOptions('nome'))}
+      </Select>
     </div>
   );
 };

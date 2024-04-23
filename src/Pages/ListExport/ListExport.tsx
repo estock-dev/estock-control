@@ -5,6 +5,9 @@ import { ProductItem } from "../../ReduxStore/Slices/productsSlice";
 import ProductSelectorListExport from '../ProductSelector/ProductSelectorListExport';
 
 const ListExport: React.FC = () => {
+    const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+    const [selectedModels, setSelectedModels] = useState<string[]>([]);
+    const [selectedNames, setSelectedNames] = useState<string[]>([]);
     const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
     const [selectedModel, setSelectedModel] = useState<string | null>(null);
     const [selectedName, setSelectedName] = useState<string | null>(null);
@@ -18,31 +21,33 @@ const ListExport: React.FC = () => {
     const handleExportSelected = () => {
         let filteredProducts = products;
 
-        if (selectedBrand) {
-            filteredProducts = filteredProducts.filter(p => p.marca === selectedBrand);
+        if (selectedBrands.length) {
+            filteredProducts = filteredProducts.filter(p => selectedBrands.includes(p.marca));
         }
 
-        if (selectedModel) {
-            filteredProducts = filteredProducts.filter(p => p.modelo === selectedModel);
+        if (selectedModels.length) {
+            filteredProducts = filteredProducts.filter(p => selectedModels.includes(p.modelo));
         }
 
-        if (selectedName) {
-            filteredProducts = filteredProducts.filter(p => p.nome === selectedName);
+        if (selectedNames.length) {
+            filteredProducts = filteredProducts.filter(p => selectedNames.includes(p.nome));
         }
+
 
         const productListString = convertDataToString(filteredProducts);
         copyToClipboard(productListString);
+    };
+    
+    const handleSelectionChange = (brands: string[] | null, models: string[] | null, names: string[] | null) => {
+        setSelectedBrands(brands || []);
+        setSelectedModels(models || []);
+        setSelectedNames(names || []);
     };
 
     return (
         <div className='view-products-list'>
             <ProductSelectorListExport
-                onSelectionChange={(brand, model, name) => {
-                    setSelectedBrand(brand);
-                    setSelectedModel(model);
-                    setSelectedName(name);
-                }}
-                stepByStep={false}
+                onSelectionChange={handleSelectionChange}
             />
             <div className="buttonGroup">
                 <Button onClick={handleExportSelected}>
