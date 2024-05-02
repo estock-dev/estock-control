@@ -1,0 +1,136 @@
+.desktop4Child {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0);
+    width: 1440px;
+    height: 95px;
+}
+.eStock {
+    position: absolute;
+    height: 21.05%;
+    width: 5.9%;
+    top: 33.68%;
+    left: 2.22%;
+    display: inline-block;
+}
+.div {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+    background-color: rgba(0, 0, 0, 0);
+}
+.logout {
+    position: absolute;
+    top: 30.53%;
+    left: 93.4%;
+    text-align: center;
+    text-shadow: 1px 0 0 #000, 0 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+}
+.navbar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 1440px;
+    height: 95px;
+}
+.desktop4Item {
+    position: absolute;
+    top: 426px;
+    left: 281px;
+    width: 878px;
+    height: 172px;
+}
+.desktop4 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #000;
+    width: 1440px;
+    height: 1024px;
+    overflow: hidden;
+}
+.home1 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border: 1px solid #000;
+    box-sizing: border-box;
+    width: 1440px;
+    height: 1024px;
+}
+.groupChild {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 53px;
+    height: 50px;
+}
+.frameChild {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 12px;
+    width: 267px;
+    height: 50px;
+}
+.rectangleWrapper {
+    position: absolute;
+    top: 158px;
+    left: 0px;
+    width: 53px;
+    height: 50px;
+}
+.frameParent {
+    position: absolute;
+    top: 9px;
+    left: 0px;
+    width: 53px;
+    height: 208px;
+}
+.vectorIcon {
+    position: absolute;
+    top: 0px;
+    left: 4px;
+    width: 310px;
+    height: 2159px;
+}
+.groupParent {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 314px;
+    height: 2159px;
+}
+.sidenavcomponentInner {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 149px;
+    height: 533px;
+}
+.sidenavcomponent {
+    position: absolute;
+    top: 236px;
+    left: 32px;
+    width: 149px;
+    height: 533px;
+}
+.home {
+    width: 100%;
+    position: relative;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border: 1px solid #000;
+    box-sizing: border-box;
+    height: 1024px;
+    text-align: left;
+    font-size: 20px;
+    color: #fff;
+    font-family: Saira;
+}
+

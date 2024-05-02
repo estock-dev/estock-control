@@ -1,107 +1,158 @@
+import React from 'react';
+import { Row, Col, Card, message } from 'antd';
+import icon1 from '../../assets/menu/Atualizar2x.png';
+import icon2 from '../../assets/menu/Consultar2x.png';
+import icon3 from '../../assets/menu/ListaRapida2x.png';
+import { useAppSelector, useAppDispatch } from '../../ReduxStore/hooks';
 import { useNavigate } from 'react-router-dom';
-import { Card, List, message } from 'antd';
-import iconUpdate from './../../assets/Logos/Opcao1/e-stock-logotransp.png'
-import iconFetch from './../../assets/Logos/Opcao2/logotransparente.png'
-import iconQuickMessage from './../../assets/Logos/Icones/message2.png'
-import { useAppDispatch, useAppSelector } from '../../ReduxStore/hooks';
-import { useEffect,  } from 'react';
-import { fetchProducts, ProductItem } from '../../ReduxStore/Slices/productsSlice';
+import { useEffect } from 'react';
+import { fetchProducts } from '../../ReduxStore/Slices/productsSlice';
 
-const solutions = [
-    {
-        name: 'Atualizar',
-        href: '/stock-update',
-        icon: IconOne,
-    },
-    {
-        name: 'Consultar',
-        href: '/view-products',
-        icon: IconTwo,
-    },
-    {
-        name: 'Lista Rápida',
-        href: '',
-        icon: IconThree,
-    },
-];
-
-export default function HomeStyledOptions() {
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const products = useAppSelector(state => state.products.products);
-    function convertDataToString(data: ProductItem[]): string {
-        return data.map(p => `${p.marca}, ${p.modelo}, ${p.nome}, ${p.qtd}`).join('\n');
-      }
-      
-      function copyToClipboard(text: string) {
-        if (!text) {
-          message.error('Não há dados para copiar.');
-          return;
-        }
-      
-        navigator.clipboard.writeText(text).then(() => {
-          message.success('Lista copiada para o clipboard!');
-        }).catch(err => {
-          console.error('Error copying to clipboard: ', err);
-          message.error('Falha ao copiar para o clipboard. Tente novamente.');
-        });
-      }
-
-    const handleExportAll = () => {
-        const productListString = convertDataToString(products);
-        copyToClipboard(productListString);
-      };
+type MenuCardProps = {
+  imageSrc: string,
+  functionHolder: () => void,
+};
 
 
-    useEffect(() => {
-        dispatch(fetchProducts());
-      }, [dispatch]);
-    
-
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <Card bordered={false} style={{ width: '100%', maxWidth: '100%', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
-                <List
-                    itemLayout="vertical"
-                    dataSource={solutions}
-                    renderItem={item => (
-                        <List.Item
-                            onClick={
-                                item.name === 'Lista Rápida' ? handleExportAll : () => navigate(item.href)}
-                            style={{
-                                margin: '24px',
-                                padding: '20px',
-                                borderRadius: '10px',
-                                cursor: 'pointer',
-                                transition: 'background-color 0.2s',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                textAlign: 'center',
-                            }}
-                            className="hoverable-list-item"
-                        >
-                            {/* <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                {<item.icon aria-hidden="true" />}
-                            </div> */}
-                            <p style={{ margin: '10px 0 0 0', fontSize: '18px', fontWeight: 'normal' }}>{item.name}</p>
-                        </List.Item>
-                    )}
-                />
-            </Card>
-        </div>
-    );
+interface GroupedData {
+  [brand: string]: {
+    [model: string]: string[];
+  };
 }
 
-function IconOne() {
-    return <img src={iconUpdate} alt="Update Stock" style={{ maxHeight: '80px' }} />;
+interface ProductItem {
+  marca: string;
+  modelo: string;
+  nome: string;
+  qtd?: number;
 }
 
-function IconTwo() {
-    return <img src={iconFetch} alt="View Products" style={{ maxHeight: '80px' }} />;
+function capitalizeFirstLetter(string: string): string {
+  return string
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
-function IconThree() {
-    return <img src={iconQuickMessage} alt="Quick Message" style={{ maxHeight: '80px' }} />;
+function convertDataToString(data: ProductItem[]): string {
+  const sortedData = [...data].sort((a, b) => {
+    const brandA = a.marca.toUpperCase();
+    const brandB = b.marca.toUpperCase();
+    const modelA = a.modelo.toUpperCase();
+    const modelB = b.modelo.toUpperCase();
+    const nameA = a.nome.toUpperCase();
+    const nameB = b.nome.toUpperCase();
+
+    if (brandA < brandB) return -1;
+    if (brandA > brandB) return 1;
+    if (modelA < modelB) return -1;
+    if (modelA > modelB) return 1;
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
+
+  const groupedData: GroupedData = sortedData.reduce((acc: GroupedData, p) => {
+    const brand = capitalizeFirstLetter(p.marca);
+    const model = capitalizeFirstLetter(p.modelo.replace(p.marca, '').trim());
+    const name = capitalizeFirstLetter(p.nome);
+
+
+    if (!acc[brand]) {
+      acc[brand] = {};
+    }
+    if (!acc[brand][model]) {
+      acc[brand][model] = [];
+    }
+    acc[brand][model].push(name);
+
+    return acc;
+  }, {});
+
+  let result = '';
+  for (const brand in groupedData) {
+    result += `--- ${brand} ---,\n`;
+    for (const model in groupedData[brand]) {
+      result += `Modelo: ${model}\n`;
+      const names = groupedData[brand][model].join(', ');
+      result += `Opções: ${names}\n\n`;
+    }
+    result += '\n';
+  }
+
+  return result.trim();
 }
+
+function copyToClipboard(text: string) {
+  if (!text) {
+    message.error('Não há dados para copiar.');
+    return;
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    message.success('Lista copiada para o clipboard!');
+  }).catch(err => {
+    console.error('Error copying to clipboard: ', err);
+    message.error('Falha ao copiar para o clipboard. Tente novamente.');
+  });
+}
+
+
+
+const MenuCard: React.FC<MenuCardProps> = ({ imageSrc, functionHolder }) => (
+
+  <Card
+    hoverable
+    style={{
+      width: 240,
+      border: 'none',
+      background: 'transparent',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+    }}
+    bodyStyle={{ padding: 0 }}
+    cover={<img alt="example" src={imageSrc} />}
+    onClick={functionHolder}
+  />
+);
+
+
+const Menu: React.FC = () => {
+  const products = useAppSelector(state => state.products.products);
+  const handleExportAll = () => {
+    const productListString = convertDataToString(products);
+    copyToClipboard(productListString);
+  };
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  return (
+    <Row justify="center" align="middle" style={{
+      height: '100vh',
+      margin: "0 64px",
+      cursor: 'pointer',
+
+    }}>
+      <Col>
+        <MenuCard imageSrc={icon1} functionHolder={() => navigate('/stock-update')} />
+      </Col>
+      <Col>
+        <MenuCard imageSrc={icon2} functionHolder={() => navigate('/view-products')} />
+      </Col>
+      <Col>
+        <MenuCard imageSrc={icon3} functionHolder={handleExportAll} />
+      </Col>
+    </Row>
+  )
+}
+
+export default Menu;

@@ -1,18 +1,24 @@
 .title-container {
-    margin-top: 96px;
-    text-align: left;
-  }
-  
-  .title-text {
-    margin-bottom: 8px;
-    font-size: 24px;
-    
-  }
-  
-  .title-underline {
-    border: 0;
-    height: 2px;
-    background-color: #676565;
-    margin-bottom: 32px;
-  }
-  
+  margin-top: 96px;
+  text-align: left;
+}
+
+.title-text {
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-family: "Saira", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+  opacity: 0.8;
+}
+
+.title-underline {
+  border: 0;
+  height: 2px;
+  opacity: 0.8;
+  background-color: #7b7b7b;
+  margin-bottom: 32px;
+}

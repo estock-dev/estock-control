@@ -1,29 +1,30 @@
 import { createBrowserRouter, RouteObject, Navigate } from "react-router-dom";
 import Error from "../Pages/Error/Error";
 import Login from "../Pages/Login/Login";
-import HomePage from "../Pages/Home/Home";
+import Home from "../Pages/Home/Home";
 import EditProducts from "../Pages/EditProduct/EditProduct";
-import AddProduct from "../Pages/AddProducts/AddProduct";
 import RequireAuthGuard from "./RequireAuthGuard";
-import Layout from "../Root/Layout/Layout";
-import UpdateStockContainer from "../Pages/UpdateStockContainer/UpdateStockContainer";
-import ConsultStockContainer from '../Pages/ConsultStockContainer/ConsultStockContainer'
+import MainLayout from "../Root/MainLayout/MainLayout";
+import AddProductContainer from "../Pages/ContentContainers/AddProductContainer";
+import StockManagementContainer from "../Pages/ContentContainers/StockManagementContainer";
+import UpdateStockContainer from "../Pages/ContentContainers/UpdateStockContainer";
+import ExportlistContainer from "../Pages/ContentContainers/ExportListContainer";
 
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Layout />,
+    element: <MainLayout />,
     errorElement: <Error />,
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: 'login', element: <Login /> },
-      { path: 'home', element: <RequireAuthGuard><HomePage /></RequireAuthGuard> },
-      { path: 'view-products', element: <RequireAuthGuard><ConsultStockContainer /></RequireAuthGuard> },
+      { path: 'home', element: <RequireAuthGuard><Home /></RequireAuthGuard> },
       { path: 'edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
       { path: 'edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
-      { path: 'add-product', element: <RequireAuthGuard><AddProduct /></RequireAuthGuard> },
+      { path: 'manage-stock', element: <RequireAuthGuard><StockManagementContainer /></RequireAuthGuard> },
+      { path: 'add-product', element: <RequireAuthGuard><AddProductContainer /></RequireAuthGuard> },
       { path: 'stock-update', element: <RequireAuthGuard><UpdateStockContainer /></RequireAuthGuard>, },
-      { path: 'stock-consult', element: <RequireAuthGuard><ConsultStockContainer /></RequireAuthGuard>, },
+      { path: 'list-export', element: <RequireAuthGuard><ExportlistContainer /></RequireAuthGuard>, },
     ],
   },
   {

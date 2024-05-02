@@ -6,8 +6,7 @@ import ImportProductsCSV from '../../Configuration/CsvImport';
 import { Table, Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
-
-import './ViewProductsList.css';
+import './StockManagement.css';
 
 interface Product {
   key: React.Key;
@@ -17,7 +16,7 @@ interface Product {
   qtd: number;
 }
 
-const ViewProductsList: React.FC = () => {
+const StockManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filterResetKey, setFilterResetKey] = useState<number>(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -185,4 +184,4 @@ const ViewProductsList: React.FC = () => {
   );
 };
 
-export default ViewProductsList;
+export default StockManagement;

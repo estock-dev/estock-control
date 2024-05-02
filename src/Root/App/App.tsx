@@ -4,11 +4,10 @@ import './App.css'
 
 function App() {
   return (
-    
     <div className='router-container'>
       <RouterProvider router={router} />
     </div>
-    
+
   );
 }
 

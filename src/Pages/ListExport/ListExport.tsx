@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, Input, Switch } from 'antd';
 import { useAppSelector } from '../../ReduxStore/hooks';
-import { ProductItem } from "../../ReduxStore/Slices/productsSlice";
 import ProductSelectorListExport from '../ProductSelector/ProductSelectorListExport';
+import { copyToClipboard, convertDataToString,  } from './ListUtility';
+import { ProductItem } from './ListUtility';
+const { TextArea } = Input;
 
 const ListExport: React.FC = () => {
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
     const [selectedNames, setSelectedNames] = useState<string[]>([]);
-    const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-    const [selectedModel, setSelectedModel] = useState<string | null>(null);
-    const [selectedName, setSelectedName] = useState<string | null>(null);
+    const [listString, setListString] = useState<string>('');
+    const [includeQuantity, setIncludeQuantity] = useState<boolean>(false); // State for the switch
+
     const products = useAppSelector(state => state.products.products);
 
+    const updateListString = (productList: ProductItem[]) => {
+        const newString = convertDataToString(productList, includeQuantity);
+        setListString(newString);
+        return newString;
+    };
+
     const handleExportAll = () => {
-        const productListString = convertDataToString(products);
+        const productListString = updateListString(products);
         copyToClipboard(productListString);
     };
 
@@ -33,15 +41,31 @@ const ListExport: React.FC = () => {
             filteredProducts = filteredProducts.filter(p => selectedNames.includes(p.nome));
         }
 
-
-        const productListString = convertDataToString(filteredProducts);
+        const productListString = updateListString(filteredProducts);
         copyToClipboard(productListString);
     };
-    
+
     const handleSelectionChange = (brands: string[] | null, models: string[] | null, names: string[] | null) => {
         setSelectedBrands(brands || []);
         setSelectedModels(models || []);
         setSelectedNames(names || []);
+
+        // Generate the list string based on the current selection
+        let filteredProducts = products;
+
+        if (brands && brands.length) {
+            filteredProducts = filteredProducts.filter(p => brands.includes(p.marca));
+        }
+
+        if (models && models.length) {
+            filteredProducts = filteredProducts.filter(p => models.includes(p.modelo));
+        }
+
+        if (names && names.length) {
+            filteredProducts = filteredProducts.filter(p => names.includes(p.nome));
+        }
+
+        updateListString(filteredProducts);
     };
 
     return (
@@ -50,6 +74,12 @@ const ListExport: React.FC = () => {
                 onSelectionChange={handleSelectionChange}
             />
             <div className="buttonGroup">
+                <Switch
+                    checkedChildren="Incluir Quantidade"
+                    unCheckedChildren="Não Incluir quantidade"
+                    onChange={setIncludeQuantity}
+                    defaultChecked={includeQuantity}
+                />
                 <Button onClick={handleExportSelected}>
                     Exportar Seleção
                 </Button>
@@ -57,20 +87,15 @@ const ListExport: React.FC = () => {
                     Exportar Lista Completa
                 </Button>
             </div>
+            <TextArea
+                value={listString}
+                readOnly
+                style={{ marginTop: 20 }}
+            />
         </div>
     )
 }
 
-function convertDataToString(data: ProductItem[]): string {
-    return data.map(p => `${p.marca}, ${p.modelo}, ${p.nome}, ${p.qtd}`).join('\n');
-}
 
-function copyToClipboard(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
-        message.success('Lista copiada para o clipboard!');
-    }).catch(err => {
-        console.error('s: ', err);
-    });
-}
 
 export default ListExport;

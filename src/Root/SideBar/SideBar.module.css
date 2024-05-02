@@ -1,0 +1,49 @@
+.groupChild {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 53px;
+    height: 50px;
+}
+.frameChild {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 12px;
+    width: 267px;
+    height: 50px;
+}
+.rectangleWrapper {
+    position: absolute;
+    top: 158px;
+    left: 0px;
+    width: 53px;
+    height: 50px;
+}
+.frameParent {
+    position: absolute;
+    top: 9px;
+    left: 0px;
+    width: 53px;
+    height: 208px;
+}
+.vectorIcon {
+    position: absolute;
+    top: 0px;
+    left: 4px;
+    width: 310px;
+    height: 2159px;
+}
+.groupContainer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 314px;
+    height: 2159px;
+}
+.groupParent {
+    width: 100%;
+    position: relative;
+    height: 533px;
+}
+

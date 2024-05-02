@@ -46,22 +46,18 @@ const ProductSelectorListExport: React.FC<ProductSelectorListExportProps> = ({
   const generateOptions = (field: 'marca' | 'modelo' | 'nome'): string[] => {
     let filteredProducts = products;
   
-    // If any brands are selected, filter the products by those brands
     if (selectedBrands.length > 0 && field !== 'marca') {
       filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.marca));
     }
   
-    // If any models are selected, filter the products by those models
     if (selectedModels.length > 0 && field !== 'modelo') {
       filteredProducts = filteredProducts.filter(product => selectedModels.includes(product.modelo));
     }
   
-    // If any names are selected, filter the products by those names
     if (selectedNames.length > 0 && field !== 'nome') {
       filteredProducts = filteredProducts.filter(product => selectedNames.includes(product.nome));
     }
   
-    // Return the unique options for the specified field
     return Array.from(new Set(filteredProducts.map(product => product[field])));
   };
   

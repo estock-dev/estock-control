@@ -6,7 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { createRoot } from 'react-dom/client';
 import { UserProvider } from '../Context/UserProvider'
 import App from '../App/App';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider } from 'antd';
 
 const root = document.getElementById('root');
 
@@ -21,19 +21,20 @@ if (root) {
                   "token": {
                     "colorPrimary": "#722ed1",
                     "colorInfo": "#722ed1",
-                    "colorBgBase": "#17123f",
+                    "colorBgBase": "transparent",
                     "colorTextBase": "#ffffff",
-                    "fontFamily": "'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;",
-                    "fontSize": 12,
+                    "fontFamily": "'Saira', sans-serif",
+                    "fontSize": 14,
                     "sizeStep": 5,
                     "borderRadius": 14,
                     "colorLink": "#fa8c16",
                     "wireframe": true,
-                    "colorPrimaryBg": "#b47fd2",
+                    "colorPrimaryBg": "rgb(0, 0, 0)",
                     "colorPrimaryBgHover": "#eb2f96",
-                    "colorPrimaryBorder": "#ffffff"
+                    "colorPrimaryBorder": "#ffffff",
+                    "colorBgLayout": "linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(69, 53, 117) 100%)",
                   },
-                algorithm: theme.darkAlgorithm
+                
               }}>
               <App />
             </ConfigProvider>
