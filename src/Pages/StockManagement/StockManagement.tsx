@@ -61,6 +61,10 @@ const StockManagement: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+  };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,

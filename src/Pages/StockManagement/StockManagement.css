@@ -1,5 +1,8 @@
 .view-products-list {
     padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .view-products-list .title {
@@ -11,9 +14,10 @@
     justify-content: flex-end;
     align-items: baseline;
     margin-top: 16px;
+    width: 100%;
 }
 
-.view-products-list .buttonGroup>Button {
+.view-products-list .buttonGroup > Button {
     margin-right: 8px;
 }
 
@@ -21,92 +25,54 @@
     margin: auto;
     max-width: 1200px;
     width: 100%;
+    overflow-x: auto; /* Ensures the table is scrollable horizontally on smaller screens */
 }
 
 .view-products-list .customTable .ant-table {
-    min-width: 200px;
-    display: flex;
-    width: 100%;
+    min-width: 600px; /* Ensures table columns have enough space */
 }
 
-.view-products-list .customTable .ant-table-tbody>tr>td:last-child {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-    line-height: normal;
-}
-
-.view-products-list .customTable .ant-table-thead>tr>td:last-child {
-    min-height: 56px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-    line-height: normal;
-}
-
-.view-products-list .customTable .ant-table-thead>tr>th:last-child,
-.view-products-list .customTable .ant-table-tbody>tr>td:last-child {
-    width: 90px;
+.view-products-list .customTable .ant-table-tbody > tr > td:last-child,
+.view-products-list .customTable .ant-table-thead > tr > th:last-child {
     text-align: center;
 }
 
 @media screen and (max-width: 600px) {
-    .view-products-list .customTable {
-        min-width: 200px;
-        margin: 8px;
-        left: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-    }
-
     .view-products-list .buttonGroup {
-        display: flex;
-        justify-content: flex-start;
         flex-direction: column;
-        align-items: baseline;
-        margin-top: 16px;
+        align-items: stretch;
         gap: 16px;
     }
-    .view-products-list .customTable .ant-table-thead>tr>th:last-child,
-    .view-products-list .customTable .ant-table-tbody>tr>td:last-child {
-        width: 90px;
-        text-align: center;
+
+    .view-products-list .buttonGroup > Button {
+        width: 100%; /* Makes buttons full width for easier access on mobile */
     }
 
-    .view-products-list .customTable .ant-table-pagination {
-        margin: 10px 0;
+    .view-products-list .customTable {
+        width: calc(100% - 16px); /* Adjust width to allow for padding/margins */
     }
 }
 
 .view-products-list .customTable .ant-table-cell {
-    padding: 4px;
+    padding: 4px 8px; /* Adjust cell padding for better data visibility */
 }
 
-.view-products-list .customTable .ant-table-thead>tr>th {
+.view-products-list .customTable .ant-table-thead > tr > th {
     padding: 16px 8px;
 }
 
 .view-products-list .customTable .ant-table-pagination {
+    margin-top: 16px;
+    margin-bottom: 0;
     margin-right: 16px;
 }
 
-.ant-select-show-search:not(.ant-select-customize-input) .ant-select-selector {
-    cursor: pointer !important;
-}
-
+.ant-select-show-search:not(.ant-select-customize-input) .ant-select-selector,
 .ant-select:not(.ant-select-open) .ant-select-selector {
     cursor: pointer !important;
 }
 
-.view-products-list .title {
-    margin-bottom: 32px;
-}
-
 .view-products-list .import-csv-link {
     margin-top: 16px;
-    display: block
+    display: block;
 }

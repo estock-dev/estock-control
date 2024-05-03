@@ -6,12 +6,12 @@ const { Header, Content, Footer } = Layout;
 
 const Home: React.FC = () => {
   return (
-    <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280 }}>
-      <Title style={{ color: 'white' }} level={2}>Bem-vinda ao e-stock!</Title>
+    <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280, display: 'flex', flexDirection: "column", justifyContent: "center" }}>
+      
       <Paragraph style={{ color: 'white' }}>
         O que deseja fazer hoje?
       </Paragraph>
-      <Button type="primary" style={{ marginTop: '16px' }}></Button>
+      
       <ActionButtons/>
     </Content>
   );

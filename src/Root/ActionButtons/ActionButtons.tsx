@@ -1,35 +1,30 @@
 import React from 'react';
-import { Row, Col, Typography } from 'antd';
-import useMobileDetect from '../Utility/CustomHooks/UseMobileDetect/useMobileDetect';
 import styles from './ActionButtons.module.css';
-
-const { Title, Paragraph } = Typography;
-
-const cardData = [
-  { id: 1, text: 'Atualizar Quantidade', description: 'Fiz uma venda? Reabasteceu um produto? Atualize seu estoque rapidamente!' },
-  { id: 2, text: 'Exportar Listas', description: 'Exporte listas personalizadas para atender seus clientes!' },
-  { id: 3, text: 'Adicionar Produto', description: 'Adicione seus produtos recém-chegados' },
-  { id: 4, text: 'Gerenciar Estoque', description: 'Consulte e edite seus produtos' },
-  { id: 5, text: 'Lista Rápida', description: 'Exporte o estoque disponível em 1 clique' }
-];
+import { Typography } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const ActionButtons: React.FC = () => {
-  const isMobile = useMobileDetect();
+    const navigate = useNavigate()
+    const cardData = [
+        { id: 1, text: 'Gerenciar Estoque', onClickHandler: () => navigate('/manage-stock')},
+        { id: 2, text: 'Atualizar Quantidade', onClickHandler: () => navigate('/stock-update')},
+        { id: 3, text: 'Exportar Listas Customizadas', onClickHandler: () => navigate('/list-export')},
+        { id: 4, text: 'Adicionar Novo Produto', onClickHandler: () => navigate('/add-product')},
+    ];
+    return (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'left', marginTop: 30 }}>
+            {cardData.map(card => (
+                <div onClick={card.onClickHandler} key={card.id} className={styles.card}>
+                    <Typography>
+                        <p className={styles.menu__link}>
+                            {card.text}
+                        </p>
+                    </Typography>
 
-  return (
-    <Row gutter={[16, 16]} style={{ width: '100%' }}>
-      {cardData.map((card) => (
-        <Col key={card.id} span={isMobile ? 24 : 8}>
-          <div className={styles.card}>
-            <div className={styles.content}>
-              <Title level={4} style={{ color: 'white', marginBottom: 5 }}>{card.text}</Title>
-              <Paragraph style={{ color: 'white', fontSize: '14px' }}>{card.description}</Paragraph>
-            </div>
-          </div>
-        </Col>
-      ))}
-    </Row>
-  );
+                </div>
+            ))}
+        </div>
+    );
 };
 
 export default ActionButtons;
