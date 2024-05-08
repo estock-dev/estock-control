@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { signInWithEmailAndPassword, signOut as firebaseSignOut, } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
-import { User } from '../../Types/user'
-import { RootState } from '../store'
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../Configuration/firebase'
+import { User } from '../../Types/user';
+import { RootState } from '../store';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../Configuration/firebase';
 
 type AuthState = {
     authenticated: boolean;
@@ -36,13 +36,12 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
                     const { uid, ...rest } = userData;
                     return { uid, ...rest };
                 } else {
-                    throw new Error('Formato inválido de dados do usuário.');
+                    throw new Error('Invalid user data format.');
                 }
             } else {
-                throw new Error('Usuário não encontrado.');
+                throw new Error('User not found.');
             }
-
-        } catch (error: unknown) {
+        } catch (error) {
             if (error instanceof Error) {
                 if ('code' in error) {
                     return rejectWithValue((error as { code: string }).code);
@@ -50,35 +49,7 @@ export const signIn = createAsyncThunk<User, { email: string; password: string }
                     return rejectWithValue(error.message);
                 }
             } else {
-                return rejectWithValue('Um erro desconhecido aconteceu durante o sign in.');
-            }
-        }
-    }
-);
-
-export const fetchUserDetails = createAsyncThunk<User, string, { state: RootState, rejectValue: string }>(
-    'auth/fetchUserDetails',
-    async (uid, { rejectWithValue }) => {
-        try {
-            const userDocRef = doc(db, 'users', uid);
-            const userSnapshot = await getDoc(userDocRef);
-
-            if (userSnapshot.exists()) {
-                const userData = userSnapshot.data();
-                if (userData) {
-                    return { ...userData as User, uid };
-                } else {
-                    throw new Error('Formato inválido de dados do usuário.');
-                }
-            } else {
-                throw new Error('Usuário não encontrado.');
-            }
-        } catch (error) {
-            // Error handling improved
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            } else {
-                return rejectWithValue('Um erro desconhecido aconteceu durante o sign in.');
+                return rejectWithValue('An unknown error occurred during sign in.');
             }
         }
     }
@@ -93,67 +64,35 @@ export const signOutUser = createAsyncThunk<void, void, { state: RootState }>(
             if (error instanceof Error) {
                 return rejectWithValue(error.message);
             }
-            return rejectWithValue('Um erro desconhecido aconteceu durante o sign out');
+            return rejectWithValue('An unknown error occurred during the sign out');
         }
     }
 );
 
-export const updateUserDetails = createAsyncThunk<User, User, { state: RootState }>(
-    'user/updateUserDetails',
-    async (userData) => {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (user) {
-            await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
-            return userData;
-        } else {
-            throw new Error('Usuário não encontrado.');
-        }
-    }
-);
-
-export const selectIsAdmin = (state: RootState) => {
-    return state.auth.currentUser && true;
-};
-
+// Slice
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        updateUser: (state, action) => {
-            if (state.currentUser && action.payload) {
-                state.currentUser = {
-                    ...state.currentUser,
-                    ...action.payload,
-                };
-            }
-        },
-        authenticateUser: (state) => {
-            state.authenticated = true;
-        },
         setUser: (state, action) => {
             state.currentUser = action.payload;
+            state.authenticated = !!action.payload;
+            state.error = null;
         },
         signOut: (state) => {
             state.authenticated = false;
             state.currentUser = null;
+            state.error = null;
         },
     },
     extraReducers: (builder) => {
         builder
             .addCase(signIn.pending, (state) => {
                 state.loading = true;
-                state.error = null;
             })
             .addCase(signIn.fulfilled, (state, action) => {
-                if (action.payload && 'uid' in action.payload) {
-                    state.authenticated = true;
-                    state.currentUser = action.payload;
-                } else {
-                    state.authenticated = false;
-                    state.currentUser = null;
-                    state.error = 'Dados do usuário inválidos.';
-                }
+                state.currentUser = action.payload;
+                state.authenticated = true;
                 state.loading = false;
             })
             .addCase(signIn.rejected, (state, action) => {
@@ -165,19 +104,10 @@ export const authSlice = createSlice({
             .addCase(signOutUser.fulfilled, (state) => {
                 state.authenticated = false;
                 state.currentUser = null;
-            })
-            .addCase(fetchUserDetails.fulfilled, (state, action) => {
-                const uid = state.currentUser?.uid || 'default-uid';
-                state.currentUser = { ...action.payload, uid };
-                state.authenticated = true;
-            })
-            .addCase(fetchUserDetails.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload || 'Um erro desconhecido aconteceu ao buscar as informações do usuário.';
             });
     },
 });
 
-export const { signOut, updateUser, setUser, authenticateUser } = authSlice.actions;
+export const { setUser, signOut } = authSlice.actions;
 export default authSlice.reducer;
 export const selectCurrentUser = (state: RootState) => state.auth.currentUser;

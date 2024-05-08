@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
 
@@ -9,13 +10,17 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  
 };
 
 const app = initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
+const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence) 
+  .catch(error => {
+    console.error("Firebase auth persistence error:", error);
+  });
 
+const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { db, storage };
+export { auth, db, storage };

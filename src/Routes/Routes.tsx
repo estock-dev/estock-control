@@ -13,25 +13,28 @@ import ExportlistContainer from "../Pages/ContentContainers/ExportListContainer"
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <MainLayout />,
-    errorElement: <Error />,
-    children: [
-      { index: true, element: <Navigate to="/home" replace /> },
-      { path: 'login', element: <Login /> },
-      { path: 'home', element: <RequireAuthGuard><Home /></RequireAuthGuard> },
-      { path: 'edit-products', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
-      { path: 'edit-product/:id', element: <RequireAuthGuard><EditProducts /></RequireAuthGuard> },
-      { path: 'manage-stock', element: <RequireAuthGuard><StockManagementContainer /></RequireAuthGuard> },
-      { path: 'add-product', element: <RequireAuthGuard><AddProductContainer /></RequireAuthGuard> },
-      { path: 'stock-update', element: <RequireAuthGuard><UpdateStockContainer /></RequireAuthGuard>, },
-      { path: 'list-export', element: <RequireAuthGuard><ExportlistContainer /></RequireAuthGuard>, },
-    ],
+    element: <Navigate to="/login" replace />, 
   },
   {
     path: '/login',
     element: <Login />,
     errorElement: <Error />
   },
+  {
+    path: '/', 
+    element: <RequireAuthGuard><MainLayout /></RequireAuthGuard>,
+    children: [
+      { index: true, element: <Navigate to="/home" replace /> },
+      { path: 'home', element: <Home /> },
+      { path: 'edit-products', element: <EditProducts /> },
+      { path: 'edit-product/:id', element: <EditProducts /> },
+      { path: 'manage-stock', element: <StockManagementContainer /> },
+      { path: 'add-product', element: <AddProductContainer /> },
+      { path: 'stock-update', element: <UpdateStockContainer /> },
+      { path: 'list-export', element: <ExportlistContainer /> },
+    ],
+    errorElement: <Error />
+  }
 ];
 
 export const router = createBrowserRouter(routes);
