@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BeyondStrangelove from '../Strangelove/BeyondStrangelove';
+import BeyondStrangelove from '../BeyondStrangelove/BeyondStrangelove';
 
 const StrangeloveContainer: React.FC = () => {
     const [password, setPassword] = useState<string>('');
@@ -20,8 +20,17 @@ const StrangeloveContainer: React.FC = () => {
                 deleteAllAuthorized ? (
                     <BeyondStrangelove />
                 ) : (
-                    <div>
-                        <h1>tell me the code and I'll let you pass</h1>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        padding: "20px"
+                    }}>
+                        <h1>
+                            insira a chave de acesso
+                        </h1>
                         <input
                             type="password"
                             value={password}
