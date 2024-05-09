@@ -1,22 +1,12 @@
-import { ReactNode } from 'react';
-import { useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
-  HomeOutlined,
-  ArrowRightOutlined,
-  ArrowLeftOutlined,
-  ThunderboltOutlined,
-  MessageOutlined,
-  ScheduleOutlined,
-  FileSearchOutlined,
-  FileSyncOutlined,
-  DatabaseOutlined,
-  AppstoreAddOutlined,
-  UserOutlined,
+  HomeOutlined, ArrowRightOutlined, ArrowLeftOutlined, ThunderboltOutlined,
+  MessageOutlined, ScheduleOutlined, FileSearchOutlined, FileSyncOutlined,
+  DatabaseOutlined, AppstoreAddOutlined, UserOutlined
 } from '@ant-design/icons';
-import { Button, Divider, Layout, Menu, Space, Modal } from 'antd';
+import { Button, Divider, Layout, Menu, Space, Modal, Tooltip } from 'antd';
 import Link from 'antd/es/typography/Link';
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import './MainLayout.css';
 import { useAppDispatch } from '../../ReduxStore/hooks';
 import useMobileDetect from '../Utility/CustomHooks/UseMobileDetect/useMobileDetect';
@@ -24,17 +14,20 @@ import ExportProducts from '../../ReduxStore/ExportProducts/ExportProducts';
 import logo from '../../assets/Logos/E.png';
 import logocompleta from '../../assets/Logos/EST.png';
 import { signOutUser } from '../../ReduxStore/Slices/authSlice';
-import { Tooltip } from 'antd';
+import useSessionTimeout from '../../ReduxStore/Slices/useSessionTimeout';
 
-
-
-const { Header, Sider, Content  } = Layout;
+const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isMobile = useMobileDetect();
+  const { setSessionStartTime } = useSessionTimeout();
   const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    setSessionStartTime();
+  }, [setSessionStartTime]);
+
   const renderTooltip = (title: string, component: ReactNode): ReactNode => {
     return collapsed ? <Tooltip title={title}>{component}</Tooltip> : component;
   };
