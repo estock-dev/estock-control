@@ -153,12 +153,12 @@ const StockManagement: React.FC = () => {
         dataSource={products}
         pagination={{
           pageSize: pageSize,
-          onChange: (page, pageSize) => {
-            // Handle both page and pageSize changes
+          onChange: (pageSize) => {
+            
             setPageSize(pageSize);
           },
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'], // This provides options in the dropdown
+          pageSizeOptions: ['10', '20', '50', '100'], 
         }}
         className="customTable"
       />

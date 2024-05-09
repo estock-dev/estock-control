@@ -9,7 +9,7 @@ import { db } from '../../Configuration/firebase';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { setCurrentProduct } from '../../ReduxStore/Slices/productsSlice';
-
+import './AddProduct.css'
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -32,16 +32,13 @@ const AddProduct = () => {
   }, [dispatch]);
 
   const checkDuplicateProduct = async (marca: string, modelo: string, nome: string) => {
-    // Query Firestore to check for existing product with same marca, modelo, nome
     const querySnapshot = await getDocs(query(collection(db, "products"), where("marca", "==", marca), where("modelo", "==", modelo), where("nome", "==", nome)));
-    // If any documents are found, it's a duplicate
     return !querySnapshot.empty;
   };
 
   const getExistingProductId = async (marca: string, modelo: string, nome: string) => {
     const querySnapshot = await getDocs(query(collection(db, "products"), where("marca", "==", marca), where("modelo", "==", modelo), where("nome", "==", nome)));
     if (!querySnapshot.empty) {
-      // Assuming that there's only one product with this combination
       return querySnapshot.docs[0].id;
     }
     return null;
@@ -122,7 +119,7 @@ const AddProduct = () => {
   }
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className='content-container'>
       <form onSubmit={formik.handleSubmit}>
         <Form.Item label="Para adicionar um novo produto, comece escolhendo uma marca ou adicione uma nova">
           <Radio.Group

@@ -90,7 +90,7 @@ const ListExport: React.FC = () => {
             <TextArea
                 value={listString}
                 readOnly
-                style={{ marginTop: 20 }}
+                style={{ marginTop: 20, minHeight: "200px", display: "flex", flexDirection: "column"  }}
             />
         </div>
     )

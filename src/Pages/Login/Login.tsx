@@ -43,37 +43,39 @@ const Login: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 300, margin: 'auto' }}>
-      {loginError && <Alert severity="error">{loginError}</Alert>}
-      <TextField
-        label="E-mail"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        {...register('email', { required: 'Email is required' })}
-        error={Boolean(errors.email)}
-        helperText={errors.email?.message}
-      />
-      <TextField
-        label="Senha"
-        variant="outlined"
-        type="password"
-        fullWidth
-        margin="normal"
-        {...register('password', { required: 'Password is required' })}
-        error={Boolean(errors.password)}
-        helperText={errors.password?.message}
-      />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        style={{ margin: '8px 0' }}
-      >
-        Login
-      </Button>
-    </form>
+    <div style={{ background: "darkgrey", width: "100vw", height: "100vh", margin: 'auto' }}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ background: "transparent", maxWidth: 300, margin: 'auto' }}>
+        {loginError && <Alert severity="error">{loginError}</Alert>}
+        <TextField
+          label="E-mail"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          {...register('email', { required: 'Email is required' })}
+          error={Boolean(errors.email)}
+          helperText={errors.email?.message}
+        />
+        <TextField
+          label="Senha"
+          variant="outlined"
+          type="password"
+          fullWidth
+          margin="normal"
+          {...register('password', { required: 'Password is required' })}
+          error={Boolean(errors.password)}
+          helperText={errors.password?.message}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          style={{ margin: '8px 0' }}
+        >
+          Login
+        </Button>
+      </form>
+    </div>
   );
 };
 

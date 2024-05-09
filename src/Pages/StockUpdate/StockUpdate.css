@@ -1,9 +1,10 @@
 .view-products-list {
-    padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .view-products-list .title {
-    margin-bottom: 32px;
+  margin-bottom: 32px;
 }
 
 .view-products-list .buttonGroup {

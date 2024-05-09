@@ -3,7 +3,7 @@ import Title from '../../Root/Title/Title';
 
 const AddProductContainer = () => {
   return (
-    <div style={{ minHeight: 360, minWidth: '320px', border: " 1px, solid, red" }}>
+    <div style={{ minHeight: 360, minWidth: '320px' }}>
       <Title text='Adicionar Produto' />
       <div>
         <AddProduct />

@@ -1,8 +1,7 @@
 .view-products-list {
     padding: 24px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: column;    
 }
 
 .view-products-list .title {
@@ -25,11 +24,11 @@
     margin: auto;
     max-width: 1200px;
     width: 100%;
-    overflow-x: auto; /* Ensures the table is scrollable horizontally on smaller screens */
+    overflow-x: auto; 
 }
 
 .view-products-list .customTable .ant-table {
-    min-width: 600px; /* Ensures table columns have enough space */
+    min-width: 600px; 
 }
 
 .view-products-list .customTable .ant-table-tbody > tr > td:last-child,
@@ -45,16 +44,16 @@
     }
 
     .view-products-list .buttonGroup > Button {
-        width: 100%; /* Makes buttons full width for easier access on mobile */
+        width: 100%; 
     }
 
     .view-products-list .customTable {
-        width: calc(100% - 16px); /* Adjust width to allow for padding/margins */
+        width: calc(100% - 16px); 
     }
 }
 
 .view-products-list .customTable .ant-table-cell {
-    padding: 4px 8px; /* Adjust cell padding for better data visibility */
+    padding: 4px 8px; 
 }
 
 .view-products-list .customTable .ant-table-thead > tr > th {

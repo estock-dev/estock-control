@@ -85,7 +85,8 @@ const StockUpdate = () => {
     };
 
     return (
-        <div className='view-products-list'>
+        
+        <div className='view-products-list' style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <ProductSelector
                 onSelectionChange={(brand, model, name) => {
                     setSelectedBrand(brand);
@@ -113,7 +114,7 @@ const StockUpdate = () => {
                             <Button icon={<PlusCircleOutlined />} color="blue" onClick={handleIncrement} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: "right", alignItems: 'center', marginTop: '20px' }}>
-                            <Text style={{ margin: '0 16px', fontSize: '18px', textAlign: 'center' }}>Quantidade Atual: {selectedProduct.qtd}</Text>
+                            <Text style={{ margin: '0 16px', fontSize: '18px', paddingLeft: "24px", borderLeft: "1px solid darkgrey", textAlign: 'center' }}>Quantidade Atual: {selectedProduct.qtd}</Text>
                         </div>
                         <Button onClick={handleUpdateStock}>Atualizar Estoque</Button>
                     </Form>

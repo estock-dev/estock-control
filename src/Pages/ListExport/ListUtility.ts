@@ -20,7 +20,7 @@ export function capitalizeFirstLetter(string: string): string {
     .join(' ');
 }
 
-export function convertDataToString(data: ProductItem[], includeQty: boolean): string {
+export function convertDataToStringUnformatted(data: ProductItem[], includeQty: boolean): string {
   return data.map(item => {
     const brand = capitalizeFirstLetter(item.marca);
     const model = capitalizeFirstLetter(item.modelo.replace(item.marca, '').trim());
@@ -30,7 +30,7 @@ export function convertDataToString(data: ProductItem[], includeQty: boolean): s
   }).join(',\n');
 }
 
-export function convertDataToStringGrouped(data: ProductItem[], includeQty: boolean): string {
+export function convertDataToString(data: ProductItem[], includeQty: boolean): string {
   const sortedData = [...data].sort((a, b) => {
     const brandA = a.marca.toUpperCase();
     const brandB = b.marca.toUpperCase();
@@ -67,11 +67,11 @@ export function convertDataToStringGrouped(data: ProductItem[], includeQty: bool
 
   let result = '';
   for (const brand in groupedData) {
-    result += `--- ${brand} ---,\n`;
+    result += `--- ${brand} ---\n`;
     for (const model in groupedData[brand]) {
       result += `Modelo: ${model}\n`;
-      const names = groupedData[brand][model].join(', ');
-      result += `Opções: ${names}\n\n`;
+      const names = groupedData[brand][model].join('\n- ');
+      result += `Opções: \n- ${names}\n\n`;
     }
     result += '\n';
   }
