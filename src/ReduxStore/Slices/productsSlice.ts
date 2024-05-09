@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction, createAction } from '@reduxjs/toolkit';
-import { query, where, collection, getDocs, doc, getDoc, updateDoc, FirestoreError } from 'firebase/firestore';
-import { db } from  '../../Configuration/firebase'
+import { query, where, collection, getDocs, deleteDoc, doc, getDoc, updateDoc, FirestoreError } from 'firebase/firestore';
+import { db } from '../../Configuration/firebase'
 import type { RootState } from '../store';
 
 
@@ -27,9 +27,9 @@ interface Model {
 interface ProductsState {
   products: ProductItem[];
   currentProduct: ProductItem | null;
-  includeQuantity: boolean; 
-  selectedKey: string; 
-  formattedMessage: string; 
+  includeQuantity: boolean;
+  selectedKey: string;
+  formattedMessage: string;
   loading: boolean;
   error: string | null;
   selectedProducts: ProductItem[];
@@ -40,11 +40,11 @@ interface ProductsState {
 
 const initialState: ProductsState = {
   products: [],
-  currentProduct: null, 
+  currentProduct: null,
   loading: false,
   error: null,
-  includeQuantity: false, 
-  selectedKey: 'marcas', 
+  includeQuantity: false,
+  selectedKey: 'marcas',
   formattedMessage: '',
   selectedProducts: [],
   brands: [],
@@ -83,6 +83,28 @@ export const updateProductQuantity = createAsyncThunk<
         return rejectWithValue(error.message);
       }
       return rejectWithValue('Um erro desconhecido ocorreu ao atualizar a quantidade do produto:.');
+    }
+  }
+);
+
+export const deleteAllProducts = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string }
+>(
+  'products/deleteAllProducts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'products'));
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);  // Deleting each document one by one
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error deleting products:', error);
+        return rejectWithValue('Failed to delete products.');
+      }
+      return rejectWithValue('An unknown error occurred during product deletion.');
     }
   }
 );
@@ -156,7 +178,7 @@ export const setCurrentProduct = createAction<{ id: string }>('products/setCurre
 
 export const selectAllBrands = (state: RootState) => {
   const brands = state.products.products.map((product) => product.marca);
-  return [...new Set(brands)]; 
+  return [...new Set(brands)];
 };
 
 export const productsSlice = createSlice({
@@ -193,7 +215,7 @@ export const productsSlice = createSlice({
     setCurrentProduct(state, action: PayloadAction<{ id: string }>) {
       state.currentProduct = state.products.find(p => p.id === action.payload.id) || null;
     },
-  
+
   },
   extraReducers: (builder) => {
     builder
@@ -218,12 +240,24 @@ export const productsSlice = createSlice({
       })
       .addCase(fetchProductById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentProduct = action.payload; 
-        
+        state.currentProduct = action.payload;
       })
       .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Falha ao buscar produtos.';
+      })
+      .addCase(deleteAllProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAllProducts.fulfilled, (state) => {
+        state.products = [];
+        state.loading = false;
+        console.log('All products have been successfully deleted');
+      })
+      .addCase(deleteAllProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to delete all products.';
       });
   },
 });
