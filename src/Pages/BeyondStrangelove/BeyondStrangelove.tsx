@@ -1,15 +1,16 @@
 import { useDispatch } from 'react-redux';
 import { deleteAllProducts } from '../../ReduxStore/Slices/productsSlice';
 import { AppDispatch } from '../../ReduxStore/store'; // Adjust this path to where your store or AppDispatch type is defined
+import { useNavigate } from 'react-router-dom';
 import './BeyondStrangelove.css';
 
 export default function BeyondStrangelove() {
-    // Use AppDispatch type for dispatch if defined
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
 
     const handleDeleteAll = () => {
-        // Properly dispatching a thunk action
         dispatch(deleteAllProducts());
+        navigate('/bar-and-ball')
     };
 
     return (

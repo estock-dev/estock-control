@@ -10,6 +10,7 @@ import StockManagementContainer from "../Pages/ContentContainers/StockManagement
 import UpdateStockContainer from "../Pages/ContentContainers/UpdateStockContainer";
 import ExportlistContainer from "../Pages/ContentContainers/ExportListContainer";
 import StrangeloveContainer from "../Pages/ContentContainers/StrangeloveContainer";
+import Blank from "../Pages/Blank/Blank";
 
 const routes: RouteObject[] = [
   {
@@ -19,6 +20,11 @@ const routes: RouteObject[] = [
   {
     path: '/login',
     element: <Login />,
+    errorElement: <Error />
+  },
+  {
+    path: '/bar-and-ball',
+    element: <Blank />,
     errorElement: <Error />
   },
   {

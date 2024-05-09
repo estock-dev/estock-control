@@ -1,19 +1,24 @@
 import React from 'react';
-import { Button, Typography, Layout } from 'antd';
+import { Typography, Layout } from 'antd';
 import ActionButtons from '../../Root/ActionButtons/ActionButtons';
-const { Title, Paragraph } = Typography;
-const { Header, Content, Footer } = Layout;
+import StrangeloveButton from '../../Root/StrangeloveButton/StrangeloveButton';
+
+const { Paragraph } = Typography;
+const { Content } = Layout;
 
 const Home: React.FC = () => {
   return (
-    <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280, display: 'flex', flexDirection: "column", justifyContent: "center" }}>
-      
-      <Paragraph style={{ color: 'white' }}>
-        O que deseja fazer hoje?
-      </Paragraph>
-      
-      <ActionButtons/>
-    </Content>
+    <Layout style={{ position: 'relative', height: '100%' }}>
+      <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280, display: 'flex', flexDirection: "column", justifyContent: "center" }}>
+        <Paragraph style={{ color: 'white', margin: 0 }}>
+          O que deseja fazer hoje?
+        </Paragraph>
+        <ActionButtons/>
+      </Content>
+      <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
+        <StrangeloveButton />
+      </div>
+    </Layout>
   );
 };
 
