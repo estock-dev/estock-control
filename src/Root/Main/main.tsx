@@ -20,9 +20,9 @@ if (rootElement) {
           <ConfigProvider
             theme={{
               "token": {
-                "colorPrimary": "#722ed1",
-                "colorInfo": "#722ed1",
-                "colorBgBase": "transparent",
+                "colorPrimary": "#362092",
+                "colorInfo": "white",
+                "colorBgBase": "#160C45",
                 "colorTextBase": "#ffffff",
                 "fontFamily": "'Saira', sans-serif",
                 "fontSize": 14,
@@ -30,10 +30,10 @@ if (rootElement) {
                 "borderRadius": 14,
                 "colorLink": "#fa8c16",
                 "wireframe": true,
-                "colorPrimaryBg": "rgb(0, 0, 0)",
+                "colorPrimaryBg": "#241560",
                 "colorPrimaryBgHover": "#eb2f96",
                 "colorPrimaryBorder": "#ffffff",
-                "colorBgLayout": "linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(69, 53, 117) 100%)",
+                "colorBgLayout": "radial-gradient(#241560, black)"
               }
             }}
           >

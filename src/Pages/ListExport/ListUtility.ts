@@ -21,6 +21,16 @@ export function capitalizeFirstLetter(string: string): string {
 }
 
 export function convertDataToString(data: ProductItem[], includeQty: boolean): string {
+  return data.map(item => {
+    const brand = capitalizeFirstLetter(item.marca);
+    const model = capitalizeFirstLetter(item.modelo.replace(item.marca, '').trim());
+    const name = capitalizeFirstLetter(item.nome);
+    const quantity = includeQty && item.qtd ? `, Quantidade: ${item.qtd}` : '';
+    return `${brand}, ${model}, ${name}${quantity}`;
+  }).join(',\n');
+}
+
+export function convertDataToStringGrouped(data: ProductItem[], includeQty: boolean): string {
   const sortedData = [...data].sort((a, b) => {
     const brandA = a.marca.toUpperCase();
     const brandB = b.marca.toUpperCase();

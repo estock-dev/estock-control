@@ -3,7 +3,7 @@ import Title from '../../Root/Title/Title';
 
 const AddProductContainer = () => {
   return (
-    <div style={{ width: "100%", border: "1px solid red", minHeight: 360, minWidth: '320px' }}>
+    <div style={{ width: "100%", minHeight: 360, minWidth: '320px' }}>
       <Title text='Atualizar Quantidade de um Produto' />
       <div>
         <StockUpdate />

@@ -9,6 +9,7 @@ import AddProductContainer from "../Pages/ContentContainers/AddProductContainer"
 import StockManagementContainer from "../Pages/ContentContainers/StockManagementContainer";
 import UpdateStockContainer from "../Pages/ContentContainers/UpdateStockContainer";
 import ExportlistContainer from "../Pages/ContentContainers/ExportListContainer";
+import StrangeloveContainer from "../Pages/ContentContainers/StrangeloveContainer";
 
 const routes: RouteObject[] = [
   {
@@ -32,6 +33,7 @@ const routes: RouteObject[] = [
       { path: 'add-product', element: <AddProductContainer /> },
       { path: 'stock-update', element: <UpdateStockContainer /> },
       { path: 'list-export', element: <ExportlistContainer /> },
+      { path: 'strangelove', element: <StrangeloveContainer/> },
     ],
     errorElement: <Error />
   }
