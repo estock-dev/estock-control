@@ -1,10 +1,10 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import {
-  HomeOutlined, ArrowRightOutlined, ArrowLeftOutlined, ThunderboltOutlined,
+  HomeOutlined, ThunderboltOutlined,
   MessageOutlined, ScheduleOutlined, FileSearchOutlined, FileSyncOutlined,
   DatabaseOutlined, AppstoreAddOutlined, UserOutlined
 } from '@ant-design/icons';
-import { Button, Divider, Layout, Menu, Space, Modal, Tooltip } from 'antd';
+import { Layout, Menu, Modal, Tooltip } from 'antd';
 import Link from 'antd/es/typography/Link';
 import { Outlet, useNavigate } from 'react-router-dom';
 import './MainLayout.css';
@@ -12,7 +12,6 @@ import { useAppDispatch } from '../../ReduxStore/hooks';
 import useMobileDetect from '../Utility/CustomHooks/UseMobileDetect/useMobileDetect';
 import ExportProducts from '../../ReduxStore/ExportProducts/ExportProducts';
 import logo from '../../assets/Logos/E.png';
-import logocompleta from '../../assets/Logos/EST.png';
 import { signOutUser } from '../../ReduxStore/Slices/authSlice';
 import useSessionTimeout from '../../ReduxStore/Slices/useSessionTimeout';
 
@@ -23,14 +22,18 @@ const MainLayout = () => {
   const navigate = useNavigate();
   const isMobile = useMobileDetect();
   const { setSessionStartTime } = useSessionTimeout();
-  const [collapsed, setCollapsed] = useState(false);
+
   useEffect(() => {
     setSessionStartTime();
   }, [setSessionStartTime]);
 
-  const renderTooltip = (title: string, component: ReactNode): ReactNode => {
-    return collapsed ? <Tooltip title={title}>{component}</Tooltip> : component;
+  const renderTooltip = (component: ReactNode): ReactNode => {
+    return <Tooltip>{component}</Tooltip>;
   };
+  const renderTooltipExportAll = (component: ReactNode): ReactNode => {
+    return <Tooltip style={{ padding: "12px" }} title='Exportar Lista Completa'><MessageOutlined style={{ paddingLeft: 2 }} /> {component}</Tooltip>;
+  };
+
   const confirmLogout = () => {
     Modal.confirm({
       title: 'Confirm Logout',
@@ -43,100 +46,42 @@ const MainLayout = () => {
   };
 
   const mobileMenuItems = [
-    { key: 'home', icon: <HomeOutlined />, onClick: () => navigate('/home') },
+    { key: 'home', icon: <HomeOutlined />, label: 'Home', onClick: () => navigate('/home') },
     {
-      key: 'stock', icon: renderTooltip('Estoque', <DatabaseOutlined />), children: [
-        { key: '4', icon: renderTooltip('Gerenciar', <FileSearchOutlined />), label: 'Gerenciar', onClick: () => navigate('/manage-stock') },
-        { key: '5', icon: renderTooltip('Adicionar Produto', <AppstoreAddOutlined />), label: 'Adicionar Produto', onClick: () => navigate('/add-product') },
-        { key: '6', icon: renderTooltip('Gerar Lista', <ScheduleOutlined />), label: 'Gerar Lista', onClick: () => navigate('/list-export') },
-      ]
-    },
-    {
-      key: 'actions', icon: renderTooltip('Ações Rápidas', <ThunderboltOutlined />),
+      key: 'stock', icon: <DatabaseOutlined />, label: "Estoque",
       children: [
-        { key: '2', icon: renderTooltip('Atualizar Quantidade', <FileSyncOutlined />), label: 'Atualizar Quantidade', onClick: () => navigate('/stock-update') },
-        { key: '3', icon: renderTooltip('Exportar Lista Completa', <MessageOutlined />), label: <ExportProducts />, style: { cursor: 'pointer' } },
+        { key: '4', icon: <FileSearchOutlined />, label: 'Gerenciar', onClick: () => navigate('/manage-stock') },
+        { key: '5', icon: <AppstoreAddOutlined />, label: 'Adicionar Produto', onClick: () => navigate('/add-product') },
+        { key: '6', icon: <ScheduleOutlined />, label: 'Gerar Lista', onClick: () => navigate('/list-export') },
       ]
     },
-    { key: 'logout', icon: renderTooltip('Atualizar Quantidade', <UserOutlined />), onClick: confirmLogout }
+    {
+      key: 'actions', icon: <ThunderboltOutlined />, label: 'Ações Rápidas',
+      children: [
+        { key: '2', icon: <FileSyncOutlined />, label: 'Atualizar Quantidade', onClick: () => navigate('/stock-update') },
+        { key: '3', icon: renderTooltipExportAll(<ExportProducts />), style: { cursor: 'pointer' } },
+      ]
+    },
+    { key: 'logout', icon: <UserOutlined />, label: "Logout", onClick: confirmLogout }
   ];
 
   return (
+
     <Layout style={{ minHeight: '100vh' }}>
-      {isMobile ? (
-        <>
-          <Header style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: "transparent", }}>
-            <Link href='/home'>
-              <img src={logo} alt="Logo" style={{ display: 'flex', width: 30, margin: '0 24px' }} />
-            </Link>
-            <Menu mode="horizontal" items={mobileMenuItems} style={{ width: '100%', display: "flex", justifyContent: "right", background: "transparent" }} />
-          </Header>
-          <Layout style={{ transition: 'margin 0.2s', minWidth: '320px' }}> {/* Set a minimum width for smaller devices */}
-            <Content style={{ margin: '24px 16px', padding: 24, background: "transparent", minHeight: 280 }}>
-              <Outlet />
-            </Content>
-          </Layout>
-        </>
-      ) : (
-        <>
-          <Sider trigger={null} width={256} collapsedWidth={80} collapsible collapsed={collapsed} onCollapse={setCollapsed} style={{ background: "transparent", position: "fixed", left: 0, top: 0, bottom: 0 }}>
-            <Space style={collapsed ? { marginTop: "18px", marginBottom: '24px', display: 'flex', justifyContent: 'center', width: '100%' } : { display: 'flex', justifyContent: 'left', width: '100%', marginTop: "18px", marginBottom: '24px', }}>
-              <Link href='/home'>
-                <img src={collapsed ? logo : logocompleta} alt="Logo" style={collapsed ? { display: 'block', width: 30, margin: 24 } : { display: 'block', width: 128, margin: 32 }} />
-              </Link>
-            </Space>
-            <Divider />
-            <Menu style={{ background: "transparent", flex: 1 }} mode="inline" items={[
-              { key: '1', icon: <HomeOutlined />, label: 'Home', onClick: () => navigate('/home') },
-              {
-                key: 'sub3',
-                label: 'Estoque',
-                icon: <DatabaseOutlined />,
-                children: [
-                  { key: '4', icon: <FileSearchOutlined />, label: 'Gerenciar', onClick: () => navigate('/manage-stock') },
-                  { key: '5', icon: <AppstoreAddOutlined />, label: 'Adicionar Produto', onClick: () => navigate('/add-product') },
-                  { key: '6', icon: <ScheduleOutlined />, label: 'Gerar Lista', onClick: () => navigate('/list-export') },
-                ],
-              },
-              {
-                key: 'sub4',
-                label: 'Ações Rápidas',
-                icon: <ThunderboltOutlined />,
-                children: [
-                  { key: '2', icon: <FileSyncOutlined />, label: 'Atualizar Quantidade', onClick: () => navigate('/stock-update') },
-                  { key: '3', icon: renderTooltip('Atualizar Quantidade', <MessageOutlined />), label: <ExportProducts />, style: { cursor: 'pointer' } },
-                ],
-              },
-              {
-                key: 'logout',
-                icon: <UserOutlined />,
-                label: 'Logout',
-                style: { position: 'absolute', bottom: 0, width: '100%' },
-                onClick: confirmLogout,
-              }
 
-            ]} />
-          </Sider>
-
-          <Layout style={{ marginLeft: collapsed ? 80 : 256, transition: 'margin 0.2s', minWidth: '320px' }}>
-            <Header style={{ padding: 0, background: "transparent" }}>
-              <Button
-                type="text"
-                icon={collapsed ? <ArrowRightOutlined /> : <ArrowLeftOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{
-                  fontSize: '16px',
-                  width: 64,
-                  height: 64,
-                }}
-              />
-            </Header>
-            <Content style={{ margin: '24px 16px', padding: 24, background: "transparent", minHeight: 280 }}>
-              <Outlet />
-            </Content>
-          </Layout>
-        </>
-      )}
+      <>
+        <Header style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: "transparent" }}>
+          <Link href='/home'>
+            <img src={logo} alt="Logo" style={{ display: 'flex', width: 30, margin: '0 24px' }} />
+          </Link>
+          <Menu mode="horizontal" items={mobileMenuItems} style={{ width: '100%', display: "flex", justifyContent: "right", alignItems: "center", background: "transparent" }} />
+        </Header>
+        <Layout style={{ transition: 'transition: all 1s ease-out', minWidth: '320px' }}>
+          <Content style={{ margin: '24px 16px', padding: 24, background: "transparent", minHeight: 280 }}>
+            <Outlet />
+          </Content>
+        </Layout>
+      </>
 
     </Layout>
   );

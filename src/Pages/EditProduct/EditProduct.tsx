@@ -91,7 +91,7 @@ const EditProduct: React.FC = () => {
           <Input type="number" />
         </Form.Item>
         <Form.Item>
-          <Button type="default" onClick={() => navigate('/view-products')} style={{ marginRight: 8 }}>
+          <Button type="default" onClick={() => navigate('/manage-stock')} style={{ marginRight: 8 }}>
             Cancelar
           </Button>
           <Button type="primary" htmlType="submit">

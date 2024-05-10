@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TextField, Button, Alert } from '@mui/material';
+import { TextField, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../ReduxStore/hooks'
 import { signIn } from '../../ReduxStore/Slices/authSlice';
 import { getAuth, getIdTokenResult } from 'firebase/auth';
-
+import { Button } from 'antd';
 type LoginFormInputs = {
   email: string;
   password: string;
@@ -43,7 +43,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div style={{ background: "darkgrey", width: "100vw", height: "100vh", margin: 'auto' }}>
+    <div style={{ background: "#53406b", width: "100vw", height: "100vh", margin: 'auto', alignContent: "center" }}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ background: "transparent", maxWidth: 300, margin: 'auto' }}>
         {loginError && <Alert severity="error">{loginError}</Alert>}
         <TextField
@@ -66,11 +66,8 @@ const Login: React.FC = () => {
           helperText={errors.password?.message}
         />
         <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          style={{ margin: '8px 0' }}
+         onClick={handleSubmit(onSubmit)}
+          style={{ margin: '8px 0', background: "#7A6D99" }}
         >
           Login
         </Button>

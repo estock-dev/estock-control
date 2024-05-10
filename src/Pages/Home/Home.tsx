@@ -9,11 +9,8 @@ const { Content } = Layout;
 const Home: React.FC = () => {
   return (
     <Layout style={{ position: 'relative', height: '100%' }}>
-      <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280, display: 'flex', flexDirection: "column", justifyContent: "center" }}>
-        <Paragraph style={{ color: 'white', margin: 0 }}>
-          O que deseja fazer hoje?
-        </Paragraph>
-        <ActionButtons/>
+      <Content style={{ margin: '24px 16px', padding: 24, background: 'transparent', minHeight: 280, display: 'flex', flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+        <ActionButtons />
       </Content>
       <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
         <StrangeloveButton />

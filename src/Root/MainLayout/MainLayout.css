@@ -6,10 +6,14 @@
 }
 
 .ant-layout-sider {
-  overflow: visible;
+  overflow: hidden;
   height: 100vh;
   position: fixed;
   left: 0;
+}
+
+.ant-menu .ant-menu-item .ant-menu-item-icon {
+  margin-inline-start: 0;
 }
 
 .ant-layout {

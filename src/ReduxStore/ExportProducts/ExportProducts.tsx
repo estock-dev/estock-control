@@ -91,7 +91,7 @@ const ExportProducts: React.FC = () => {
     copyToClipboard(productListString);
   };
 
-  return <div onClick={handleExportAll} style={{ cursor: 'pointer' }}>Export All Products</div>;
+  return <div onClick={handleExportAll} style={{ cursor: 'pointer' }}>&#160; Exportar Lista Completa</div>;
 };
 
 export default ExportProducts;
