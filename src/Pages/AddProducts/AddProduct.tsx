@@ -109,10 +109,10 @@ const AddProduct = () => {
   if (submitted) {
     return (
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <Title level={2}>Product successfully added!</Title>
+        <Title level={2}>Produto adicionado com sucesso!</Title>
         <div>
-          <Button onClick={handleAddAnotherProduct}>Add another product</Button>
-          <Button onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>Go to home</Button>
+          <Button onClick={handleAddAnotherProduct}>Adicionar outro produto</Button>
+          <Button onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>Voltar à página inicial</Button>
         </div>
       </div>
     );

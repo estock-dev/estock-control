@@ -30,22 +30,19 @@ const EditProduct: React.FC = () => {
 
   const handleSave = async (values: any) => {
     try {
-      await updateDoc(doc(db, 'products', id!), values);
-      // Navigate first to ensure the UI has changed before the notification appears
-      navigate('/view-products');
-      // Then show success notification
+      await updateDoc(doc(db, 'products', id!), values);    
+      navigate('/manage-stock');
       notification.success({
         message: 'Produto Atualizado',
         description: 'Os detalhes do produto foram atualizados com sucesso.',
-        duration: 2.5, // duration in seconds
+        duration: 2.5, 
       });
-    } catch (error) {
-      // Handle the error properly
+    } catch (error) {  
       console.error('Error updating document:', error);
       notification.error({
         message: 'A atualização falhou',
         description: 'Ocorreu um erro ao atualizar os detalhes do produto.',
-        duration: 2.5, // duration in seconds
+        duration: 2.5, 
       });
     }
   };
@@ -56,7 +53,6 @@ const EditProduct: React.FC = () => {
 
   return (
     <Card style={{ marginTop: 64 }}>
-      
       <Form
         form={form}
         layout="vertical"
@@ -65,28 +61,28 @@ const EditProduct: React.FC = () => {
         <Form.Item
           name="marca"
           label="Marca"
-          rules={[{ required: true, message: 'Please input the brand!' }]}
+          rules={[{ required: true, message: 'Insira a marca!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="modelo"
           label="Modelo"
-          rules={[{ required: true, message: 'Please input the model!' }]}
+          rules={[{ required: true, message: 'Insira um modelo!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="nome"
           label="Nome"
-          rules={[{ required: true, message: 'Please input the name!' }]}
+          rules={[{ required: true, message: 'Insira um nome!' }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
           name="qtd"
           label="Quantidade"
-          rules={[{ required: true, message: 'Please input the quantity!' }]}
+          rules={[{ required: true, message: 'Insira uma quantidade!' }]}
         >
           <Input type="number" />
         </Form.Item>
