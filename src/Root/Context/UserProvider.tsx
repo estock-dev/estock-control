@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { UserContext } from './userContext';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectCurrentUser, updateUser } from '../../ReduxStore/Slices/authSlice'
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '../../ReduxStore/Slices/authSlice'
 import { User } from '../../Types/user'
 
 interface UserProviderProps {
@@ -10,23 +10,16 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const currentUser = useSelector(selectCurrentUser);
-  const dispatch = useDispatch();
   const [user, setUser] = useState<User | null>(currentUser);
 
   useEffect(() => {
     setUser(currentUser);
   }, [currentUser]);
 
-  const handleSetUser = (userData: User | null) => {
-    if (userData) {
-        dispatch(updateUser(userData));
-    } else {
-    }
-    setUser(userData); 
-};
+
 
   return (
-    <UserContext.Provider value={{ user, setUser: handleSetUser }}>
+    <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
   );

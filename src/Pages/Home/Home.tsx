@@ -1,9 +1,8 @@
 import React from 'react';
-import { Typography, Layout } from 'antd';
+import { Layout } from 'antd';
 import ActionButtons from '../../Root/ActionButtons/ActionButtons';
 import StrangeloveButton from '../../Root/StrangeloveButton/StrangeloveButton';
 
-const { Paragraph } = Typography;
 const { Content } = Layout;
 
 const Home: React.FC = () => {

@@ -9,27 +9,22 @@ import Link from 'antd/es/typography/Link';
 import { Outlet, useNavigate } from 'react-router-dom';
 import './MainLayout.css';
 import { useAppDispatch } from '../../ReduxStore/hooks';
-import useMobileDetect from '../Utility/CustomHooks/UseMobileDetect/useMobileDetect';
 import ExportProducts from '../../ReduxStore/ExportProducts/ExportProducts';
 import logo from '../../assets/Logos/E.png';
 import { signOutUser } from '../../ReduxStore/Slices/authSlice';
 import useSessionTimeout from '../../ReduxStore/Slices/useSessionTimeout';
 
-const { Header, Sider, Content } = Layout;
+const { Header, Content } = Layout;
 
 const MainLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const isMobile = useMobileDetect();
   const { setSessionStartTime } = useSessionTimeout();
 
   useEffect(() => {
     setSessionStartTime();
   }, [setSessionStartTime]);
 
-  const renderTooltip = (component: ReactNode): ReactNode => {
-    return <Tooltip>{component}</Tooltip>;
-  };
   const renderTooltipExportAll = (component: ReactNode): ReactNode => {
     return <Tooltip style={{ padding: "12px" }} title='Exportar Lista Completa'><MessageOutlined style={{ paddingLeft: 2 }} /> {component}</Tooltip>;
   };
