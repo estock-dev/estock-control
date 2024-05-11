@@ -50,7 +50,6 @@ const ListExport: React.FC = () => {
         setSelectedModels(models || []);
         setSelectedNames(names || []);
 
-        // Generate the list string based on the current selection
         let filteredProducts = products;
 
         if (brands && brands.length) {

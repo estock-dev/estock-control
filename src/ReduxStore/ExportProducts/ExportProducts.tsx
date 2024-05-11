@@ -33,19 +33,28 @@ const ExportProducts: React.FC = () => {
   }
 
   function convertDataToString(data: ProductItem[]): string {
-    if (!data || data.length === 0) {
-      message.error('No products available for export.');
-      return '';
-    }
-
     const sortedData = [...data].sort((a, b) => {
-      return a.marca.localeCompare(b.marca) || a.modelo.localeCompare(b.modelo) || a.nome.localeCompare(b.nome);
+      const brandA = a.marca.toUpperCase();
+      const brandB = b.marca.toUpperCase();
+      const modelA = a.modelo.toUpperCase();
+      const modelB = b.modelo.toUpperCase();
+      const nameA = a.nome.toUpperCase();
+      const nameB = b.nome.toUpperCase();
+
+      if (brandA < brandB) return -1;
+      if (brandA > brandB) return 1;
+      if (modelA < modelB) return -1;
+      if (modelA > modelB) return 1;
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
     });
 
     const groupedData: GroupedData = sortedData.reduce((acc: GroupedData, p) => {
       const brand = capitalizeFirstLetter(p.marca);
       const model = capitalizeFirstLetter(p.modelo.replace(p.marca, '').trim());
       const name = capitalizeFirstLetter(p.nome);
+    
 
       if (!acc[brand]) {
         acc[brand] = {};
@@ -60,11 +69,11 @@ const ExportProducts: React.FC = () => {
 
     let result = '';
     for (const brand in groupedData) {
-      result += `--- ${brand} ---,\n`;
+      result += `--- ${brand} ---\n`;
       for (const model in groupedData[brand]) {
         result += `Modelo: ${model}\n`;
-        const names = groupedData[brand][model].join(', ');
-        result += `Opções: ${names}\n\n`;
+        const names = groupedData[brand][model].join('\n- ');
+        result += `Opções: \n- ${names}\n\n`;
       }
       result += '\n';
     }

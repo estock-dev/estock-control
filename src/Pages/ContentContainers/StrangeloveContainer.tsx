@@ -18,12 +18,15 @@ const StrangeloveContainer: React.FC = () => {
         <>
             {
                 deleteAllAuthorized ? (
+                    <div style={{ width: "100%", height: "100vh"}}>
                     <BeyondStrangelove />
+                    </div>
                 ) : (
                     <div style={{
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        alignContent: "center",
                         justifyContent: "center",
                         height: "100%",
                         padding: "20px"

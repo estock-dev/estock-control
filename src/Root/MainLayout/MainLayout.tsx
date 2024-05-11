@@ -31,8 +31,8 @@ const MainLayout = () => {
 
   const confirmLogout = () => {
     Modal.confirm({
-      title: 'Confirm Logout',
-      content: 'Are you sure you want to log out?',
+      title: 'Confirmar Logout',
+      content: 'Tem certeza que você deseja sair?',
       onOk() {
         dispatch(signOutUser());
         navigate('/login');
