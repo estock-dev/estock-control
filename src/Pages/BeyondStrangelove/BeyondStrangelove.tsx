@@ -14,16 +14,8 @@ export default function BeyondStrangelove() {
     };
 
     return (
-        <>
-            <div style={{ textAlign: "center", marginTop: 0, marginBottom: "auto", padding: 0 }}>
-                <h3>
-                    Se você está aqui, é porque sabe o que vai acontecer se apertar o botão abaixo.
-                </h3>
-                <h2>
-                    Uma vez pressionado, não há volta.
-                </h2>
-            </div>
-            <div className="beyond-strangelove-container">
+        <div style={{ display: "flex", flexDirection: "column", alignContent: "center", justifyContent: "center", marginTop: "300px"}}>
+            <div className="beyond-strangelove-container" style={{}}>
                 <button className="button" onClick={handleDeleteAll}>
                     <div className="lid">
                         <span className="side top"></span>
@@ -44,6 +36,6 @@ export default function BeyondStrangelove() {
                     </div>
                 </button>
             </div>
-        </>
+        </div>
     );
 }

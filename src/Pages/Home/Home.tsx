@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 import ActionButtons from '../../Root/ActionButtons/ActionButtons';
 import StrangeloveButton from '../../Root/StrangeloveButton/StrangeloveButton';
+import InvisibleButton from '../../Root/InvisibleButton/InvisibleButton';
 
 const { Content } = Layout;
 
@@ -12,7 +13,8 @@ const Home: React.FC = () => {
         <ActionButtons />
       </Content>
       <div style={{ position: 'absolute', right: 30, bottom: 30 }}>
-        <StrangeloveButton />
+        <InvisibleButton/>
+        {/* <StrangeloveButton /> */}
       </div>
     </Layout>
   );
