@@ -54,7 +54,7 @@ const AddProduct = () => {
       qtd: '',
     },
     validationSchema,
-    onSubmit: async ({ brandOption, modelOption, ...values }) => {
+    onSubmit: async ({ ...values }) => {
       const { marca, modelo, nome } = values;
       const isDuplicate = await checkDuplicateProduct(marca, modelo, nome);
 

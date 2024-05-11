@@ -28,7 +28,7 @@ const EditProduct: React.FC = () => {
     fetchProduct();
   }, [id, navigate, form]);
 
-  const handleSave = async (values: any) => {
+  const handleSave = async (values: { [x: string]: [] }) => {
     try {
       await updateDoc(doc(db, 'products', id!), values);    
       navigate('/manage-stock');
