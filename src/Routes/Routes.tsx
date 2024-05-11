@@ -15,20 +15,6 @@ import Blank from "../Pages/Blank/Blank";
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <Navigate to="/login" replace />, 
-  },
-  {
-    path: '/login',
-    element: <Login />,
-    errorElement: <Error />
-  },
-  {
-    path: '/bar-and-ball',
-    element: <Blank />,
-    errorElement: <Error />
-  },
-  {
-    path: '/', 
     element: <RequireAuthGuard><MainLayout /></RequireAuthGuard>,
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
@@ -39,8 +25,18 @@ const routes: RouteObject[] = [
       { path: 'add-product', element: <AddProductContainer /> },
       { path: 'stock-update', element: <UpdateStockContainer /> },
       { path: 'list-export', element: <ExportlistContainer /> },
-      { path: 'strangelove', element: <StrangeloveContainer/> },
+      { path: 'strangelove', element: <StrangeloveContainer /> },
     ],
+    errorElement: <Error />
+  },
+  {
+    path: '/login',
+    element: <Login />,
+    errorElement: <Error />
+  },
+  {
+    path: '/bar-and-ball',
+    element: <Blank />,
     errorElement: <Error />
   }
 ];
