@@ -61,11 +61,14 @@ const StockManagement: React.FC = () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-
-
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+  };
+
+  const handlePageSizeChange = (current: number, size: number) => {
+    console.log("Changing page size from", pageSize, "to", size); // Debug statement
+    setPageSize(size);
   };
 
   const refreshTableData = async () => {
@@ -153,12 +156,9 @@ const StockManagement: React.FC = () => {
         dataSource={products}
         pagination={{
           pageSize: pageSize,
-          onChange: (pageSize) => {
-            
-            setPageSize(pageSize);
-          },
+          onShowSizeChange: handlePageSizeChange,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'], 
+          pageSizeOptions: ['10', '20', '50', '100'],
         }}
         className="customTable"
       />
