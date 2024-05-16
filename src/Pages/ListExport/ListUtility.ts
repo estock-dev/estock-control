@@ -52,7 +52,7 @@ export function convertDataToString(data: ProductItem[], includeQty: boolean): s
     const brand = capitalizeFirstLetter(p.marca);
     const model = capitalizeFirstLetter(p.modelo.replace(p.marca, '').trim());
     const name = capitalizeFirstLetter(p.nome);
-    const quantity = includeQty ? ` (Quantidade Disponível: ${p.qtd})` : '';
+    const quantity = includeQty ? ` (${p.qtd})` : '';
 
     if (!acc[brand]) {
       acc[brand] = {};

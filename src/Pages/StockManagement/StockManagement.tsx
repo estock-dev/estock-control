@@ -66,8 +66,8 @@ const StockManagement: React.FC = () => {
     onChange: onSelectChange,
   };
 
-  const handlePageSizeChange = (current: number, size: number) => {
-    console.log("Changing page size from", pageSize, "to", size); // Debug statement
+  const handlePageSizeChange = (size: number) => {
+    console.log("Mudando o tamanho da página de", pageSize, "para", size);
     setPageSize(size);
   };
 
@@ -159,6 +159,7 @@ const StockManagement: React.FC = () => {
           onShowSizeChange: handlePageSizeChange,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],
+          locale: { items_per_page: "/ página" }
         }}
         className="customTable"
       />

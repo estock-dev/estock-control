@@ -1,77 +1,68 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { TextField, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../ReduxStore/hooks'
+import { useAppDispatch } from '../../ReduxStore/hooks';
 import { signIn } from '../../ReduxStore/Slices/authSlice';
-import { getAuth, getIdTokenResult } from 'firebase/auth';
-import { Button } from 'antd';
-type LoginFormInputs = {
-  email: string;
-  password: string;
-};
+import { Form, Input, Button, Alert } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 const Login: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+  const [form] = Form.useForm();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const onSubmit = async (data: LoginFormInputs) => {
+  const onFinish = async (values: { email: string; password: string }) => {
     try {
-      await dispatch(signIn(data)).unwrap();
-      const auth = getAuth();
-      const user = auth.currentUser;
-      console.log("User: ", user);
-      if (user) {
-        getIdTokenResult(user).then((idTokenResult) => {
-          idTokenResult.claims.admin = true;
-          const isAdmin = !!idTokenResult.claims.admin;
-          console.log("Is Admin: ", isAdmin);
-          if (isAdmin) {
-            navigate('/home');
-          } else {
-            navigate('/login');
-          }
-        });
-      }
+      await dispatch(signIn(values)).unwrap();
+      navigate('/home');
     } catch (error) {
-      console.error("Login error: ", error);
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      console.error("Erro de login: ", error);
+      const errorMessage = error instanceof Error ? error.message : 'Um erro desconhecido ocorreu, contate seu desenvolvedor';
       setLoginError(errorMessage);
     }
   };
 
+  const onReset = () => {
+    form.resetFields();
+  };
+
   return (
-    <div style={{ background: "#53406b", width: "100vw", height: "100vh", margin: 'auto', alignContent: "center" }}>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ background: "transparent", maxWidth: 300, margin: 'auto' }}>
-        {loginError && <Alert severity="error">{loginError}</Alert>}
-        <TextField
-          label="E-mail"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          {...register('email', { required: 'Email is required' })}
-          error={Boolean(errors.email)}
-          helperText={errors.email?.message}
-        />
-        <TextField
-          label="Senha"
-          variant="outlined"
-          type="password"
-          fullWidth
-          margin="normal"
-          {...register('password', { required: 'Password is required' })}
-          error={Boolean(errors.password)}
-          helperText={errors.password?.message}
-        />
-        <Button
-         onClick={handleSubmit(onSubmit)}
-          style={{ margin: '8px 0', background: "#7A6D99" }}
+    <div style={{ background: "#53406b", display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Form
+        form={form}
+        name="login_form"
+        onFinish={onFinish}
+        style={{ maxWidth: 300 }}
+        initialValues={{ remember: true }}
+      >
+        {loginError && <Alert message={loginError} type="error" showIcon style={{ marginBottom: 16 }} />}
+        <Form.Item
+          name="email"
+          rules={[{ required: true, message: 'Insira o e-mail!' }]}
         >
-          Login
-        </Button>
-      </form>
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="E-mail" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Insira a senha' }]}
+        >
+          <Input
+            prefix={<LockOutlined className="site-form-item-icon" />}
+            type="password"
+            placeholder="Senha"
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+            Login
+          </Button>
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType="button" onClick={onReset} style={{ width: '100%' }}>
+            Resetar campos
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

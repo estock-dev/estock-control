@@ -11,7 +11,7 @@ const ListExport: React.FC = () => {
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
     const [selectedNames, setSelectedNames] = useState<string[]>([]);
     const [listString, setListString] = useState<string>('');
-    const [includeQuantity, setIncludeQuantity] = useState<boolean>(false); // State for the switch
+    const [includeQuantity, setIncludeQuantity] = useState<boolean>(false); 
 
     const products = useAppSelector(state => state.products.products);
 
